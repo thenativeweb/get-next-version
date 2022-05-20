@@ -1,0 +1,20 @@
+version: 2
+updates:
+- package-ecosystem: gomod
+  directory: "/"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 10
+  assignees:
+  - curiosdevcookie
+  - dotKuro
+  - goloroden
+  - strangedev
+  - yeldiRium
+  labels:
+  - Dependencies
+  allow:
+  - dependency-type: direct
+  commit-message:
+    prefix: fix
+    prefix-development: chore
