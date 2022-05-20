@@ -4,16 +4,16 @@ import (
 	"github.com/Masterminds/semver"
 )
 
-type semanticVersioningTag int
+type SemanticVersioningTag int
 
 const (
-	Chore semanticVersioningTag = iota
+	Chore SemanticVersioningTag = iota
 	Fix
 	Feature
 	BreakingChange
 )
 
-func CalculateNextVersion(currentVersion semver.Version, semanticVersioningTags []semanticVersioningTag) semver.Version {
+func CalculateNextVersion(currentVersion *semver.Version, semanticVersioningTags []SemanticVersioningTag) semver.Version {
 	currentlyDetectedChange := Chore
 	for _, tag := range semanticVersioningTags {
 		if tag > currentlyDetectedChange {
@@ -26,7 +26,7 @@ func CalculateNextVersion(currentVersion semver.Version, semanticVersioningTags 
 
 	switch currentlyDetectedChange {
 	case Chore:
-		return currentVersion
+		return *currentVersion
 	case Fix:
 		return currentVersion.IncPatch()
 	case Feature:
