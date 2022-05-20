@@ -85,5 +85,4 @@ func TestCalculateNextVersion(t *testing.T) {
 		actualNewVersion := versioning.CalculateNextVersion(test.currentVersion, test.semanticVersioningTags)
 		assert.Equal(t, test.expectedNewVersion, &actualNewVersion)
 	}
-
 }
