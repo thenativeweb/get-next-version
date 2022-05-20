@@ -4,11 +4,5 @@ build/
 # Coverage directory
 coverage/
 
-# Licenses, keys, …
-*.lic
-*.license
-privateKey.pem
-publicKey.pem
-
 # OS generated files and directories
 .DS_Store
