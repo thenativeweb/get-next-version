@@ -82,7 +82,6 @@ func TestCalculateNextVersion(t *testing.T) {
 	}
 
 	for _, test := range tests {
-
 		actualNewVersion := versioning.CalculateNextVersion(test.currentVersion, test.semanticVersioningTags)
 		assert.Equal(t, test.expectedNewVersion, &actualNewVersion)
 	}
