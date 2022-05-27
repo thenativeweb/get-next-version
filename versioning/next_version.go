@@ -4,20 +4,20 @@ import (
 	"github.com/Masterminds/semver"
 )
 
-type SemanticVersioningTag int
+type ConventionalCommitType int
 
 const (
-	Chore SemanticVersioningTag = iota
+	Chore ConventionalCommitType = iota
 	Fix
 	Feature
 	BreakingChange
 )
 
-func CalculateNextVersion(currentVersion *semver.Version, semanticVersioningTags []SemanticVersioningTag) semver.Version {
+func CalculateNextVersion(currentVersion *semver.Version, conventionalCommitTypes []ConventionalCommitType) semver.Version {
 	currentlyDetectedChange := Chore
-	for _, tag := range semanticVersioningTags {
-		if tag > currentlyDetectedChange {
-			currentlyDetectedChange = tag
+	for _, commitType := range conventionalCommitTypes {
+		if commitType > currentlyDetectedChange {
+			currentlyDetectedChange = commitType
 		}
 		if currentlyDetectedChange == BreakingChange {
 			break
@@ -35,5 +35,5 @@ func CalculateNextVersion(currentVersion *semver.Version, semanticVersioningTags
 		return currentVersion.IncMajor()
 	}
 
-	panic("Invalid semantic versioning tag was provided. 💔")
+	panic("Invalid conventional commit type")
 }

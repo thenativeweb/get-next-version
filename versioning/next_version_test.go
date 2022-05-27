@@ -11,79 +11,79 @@ import (
 func TestCalculateNextVersion(t *testing.T) {
 	tests := []struct {
 		currentVersion         *semver.Version
-		semanticVersioningTags []versioning.SemanticVersioningTag
+		conventionalCommitType []versioning.ConventionalCommitType
 		expectedNewVersion     *semver.Version
 	}{
 		{
 			currentVersion:         semver.MustParse("1.0.0"),
-			semanticVersioningTags: []versioning.SemanticVersioningTag{},
+			conventionalCommitType: []versioning.ConventionalCommitType{},
 			expectedNewVersion:     semver.MustParse("1.0.0"),
 		},
 		{
 			currentVersion:         semver.MustParse("1.0.0"),
-			semanticVersioningTags: []versioning.SemanticVersioningTag{versioning.Chore},
+			conventionalCommitType: []versioning.ConventionalCommitType{versioning.Chore},
 			expectedNewVersion:     semver.MustParse("1.0.0"),
 		},
 		{
 			currentVersion:         semver.MustParse("1.0.0"),
-			semanticVersioningTags: []versioning.SemanticVersioningTag{versioning.Fix},
+			conventionalCommitType: []versioning.ConventionalCommitType{versioning.Fix},
 			expectedNewVersion:     semver.MustParse("1.0.1"),
 		},
 		{
 			currentVersion:         semver.MustParse("1.0.0"),
-			semanticVersioningTags: []versioning.SemanticVersioningTag{versioning.Feature},
+			conventionalCommitType: []versioning.ConventionalCommitType{versioning.Feature},
 			expectedNewVersion:     semver.MustParse("1.1.0"),
 		},
 		{
 			currentVersion:         semver.MustParse("1.0.0"),
-			semanticVersioningTags: []versioning.SemanticVersioningTag{versioning.BreakingChange},
+			conventionalCommitType: []versioning.ConventionalCommitType{versioning.BreakingChange},
 			expectedNewVersion:     semver.MustParse("2.0.0"),
 		},
 		{
 			currentVersion:         semver.MustParse("1.0.1"),
-			semanticVersioningTags: []versioning.SemanticVersioningTag{versioning.Feature},
+			conventionalCommitType: []versioning.ConventionalCommitType{versioning.Feature},
 			expectedNewVersion:     semver.MustParse("1.1.0"),
 		},
 		{
 			currentVersion:         semver.MustParse("1.1.1"),
-			semanticVersioningTags: []versioning.SemanticVersioningTag{versioning.BreakingChange},
+			conventionalCommitType: []versioning.ConventionalCommitType{versioning.BreakingChange},
 			expectedNewVersion:     semver.MustParse("2.0.0"),
 		},
 		{
 			currentVersion:         semver.MustParse("1.0.0"),
-			semanticVersioningTags: []versioning.SemanticVersioningTag{versioning.Chore, versioning.Fix, versioning.Feature, versioning.BreakingChange},
+			conventionalCommitType: []versioning.ConventionalCommitType{versioning.Chore, versioning.Fix, versioning.Feature, versioning.BreakingChange},
 			expectedNewVersion:     semver.MustParse("2.0.0"),
 		},
 		{
 			currentVersion:         semver.MustParse("1.0.0"),
-			semanticVersioningTags: []versioning.SemanticVersioningTag{versioning.BreakingChange, versioning.Feature, versioning.Fix, versioning.Chore},
+			conventionalCommitType: []versioning.ConventionalCommitType{versioning.BreakingChange, versioning.Feature, versioning.Fix, versioning.Chore},
 			expectedNewVersion:     semver.MustParse("2.0.0"),
 		},
 		{
 			currentVersion:         semver.MustParse("1.0.0"),
-			semanticVersioningTags: []versioning.SemanticVersioningTag{versioning.Chore, versioning.Chore},
+			conventionalCommitType: []versioning.ConventionalCommitType{versioning.Chore, versioning.Chore},
 			expectedNewVersion:     semver.MustParse("1.0.0"),
 		},
 		{
 			currentVersion:         semver.MustParse("1.0.0"),
-			semanticVersioningTags: []versioning.SemanticVersioningTag{versioning.Fix, versioning.Fix},
+			conventionalCommitType: []versioning.ConventionalCommitType{versioning.Fix, versioning.Fix},
 			expectedNewVersion:     semver.MustParse("1.0.1"),
 		},
 		{
 			currentVersion:         semver.MustParse("1.0.0"),
-			semanticVersioningTags: []versioning.SemanticVersioningTag{versioning.Feature, versioning.Feature},
+			conventionalCommitType: []versioning.ConventionalCommitType{versioning.Feature, versioning.Feature},
 			expectedNewVersion:     semver.MustParse("1.1.0"),
 		},
 		{
 			currentVersion:         semver.MustParse("1.0.0"),
-			semanticVersioningTags: []versioning.SemanticVersioningTag{versioning.BreakingChange, versioning.BreakingChange},
+			conventionalCommitType: []versioning.ConventionalCommitType{versioning.BreakingChange, versioning.BreakingChange},
 			expectedNewVersion:     semver.MustParse("2.0.0"),
 		},
 	}
 
 	for _, test := range tests {
 
-		actualNewVersion := versioning.CalculateNextVersion(test.currentVersion, test.semanticVersioningTags)
+		actualNewVersion := versioning.CalculateNextVersion(test.currentVersion, test.conventionalCommitType)
 		assert.Equal(t, test.expectedNewVersion, &actualNewVersion)
 	}
 
