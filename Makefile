@@ -30,16 +30,9 @@ build: qa clean
 	$(eval VERSION=$(shell git tag --points-at HEAD))
 	$(eval VERSION=$(or $(VERSION), (version unavailable)))
 
-	@GOOS=darwin GOARCH=arm64 go build -ldflags="-X 'github.com/thenativeweb/eventsourcingdb/version.Version=$(VERSION)'" -o ./build/eventsourcingdb-darwin-arm64
-	@GOOS=darwin GOARCH=amd64 go build -ldflags="-X 'github.com/thenativeweb/eventsourcingdb/version.Version=$(VERSION)'" -o ./build/eventsourcingdb-darwin-amd64
-	@GOOS=linux GOARCH=amd64 go build -ldflags="-X 'github.com/thenativeweb/eventsourcingdb/version.Version=$(VERSION)'" -o ./build/eventsourcingdb-linux-amd64
-	@GOOS=windows GOARCH=amd64 go build -ldflags="-X 'github.com/thenativeweb/eventsourcingdb/version.Version=$(VERSION)'" -o ./build/eventsourcingdb-windows-amd64.exe
+	@GOOS=darwin GOARCH=arm64 go build -o ./build/get-next-version-darwin-arm64
+	@GOOS=darwin GOARCH=amd64 go build -o ./build/get-next-version-darwin-amd64
+	@GOOS=linux GOARCH=amd64 go build -o ./build/get-next-version-linux-amd64
+	@GOOS=windows GOARCH=amd64 go build -o ./build/get-next-version-windows-amd64.exe
 
-build-docker: build
-	$(eval VERSION=$(shell git tag --points-at HEAD))
-	$(eval IMAGE_VERSION=$(or $(VERSION), latest))
-	$(eval VERSION=$(or $(VERSION), (version unavailable)))
-
-	docker build --build-arg version="$(VERSION)" -t thenativeweb/eventsourcingdb:latest -t thenativeweb/eventsourcingdb:$(IMAGE_VERSION) .
-
-.PHONY: analyse benchmark build build-docker clean coverage qa test
+.PHONY: analyse benchmark build clean coverage qa test

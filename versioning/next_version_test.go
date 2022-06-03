@@ -83,9 +83,7 @@ func TestCalculateNextVersion(t *testing.T) {
 	}
 
 	for _, test := range tests {
-
 		actualNewVersion := versioning.CalculateNextVersion(test.currentVersion, test.conventionalCommitType)
-		assert.Equal(t, test.expectedNewVersion, &actualNewVersion)
+		assert.EqualValues(t, test.expectedNewVersion, &actualNewVersion)
 	}
-
 }
