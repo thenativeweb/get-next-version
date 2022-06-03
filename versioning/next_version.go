@@ -2,36 +2,31 @@ package versioning
 
 import (
 	"github.com/Masterminds/semver"
+	"github.com/thenativeweb/getnextversion/conventionalcommits"
 )
 
-type ConventionalCommitType int
-
-const (
-	Chore ConventionalCommitType = iota
-	Fix
-	Feature
-	BreakingChange
-)
-
-func CalculateNextVersion(currentVersion *semver.Version, conventionalCommitTypes []ConventionalCommitType) semver.Version {
-	currentlyDetectedChange := Chore
+func CalculateNextVersion(
+	currentVersion *semver.Version,
+	conventionalCommitTypes []conventionalcommits.ConventionalCommitType,
+) semver.Version {
+	currentlyDetectedChange := conventionalcommits.Chore
 	for _, commitType := range conventionalCommitTypes {
 		if commitType > currentlyDetectedChange {
 			currentlyDetectedChange = commitType
 		}
-		if currentlyDetectedChange == BreakingChange {
+		if currentlyDetectedChange == conventionalcommits.BreakingChange {
 			break
 		}
 	}
 
 	switch currentlyDetectedChange {
-	case Chore:
+	case conventionalcommits.Chore:
 		return *currentVersion
-	case Fix:
+	case conventionalcommits.Fix:
 		return currentVersion.IncPatch()
-	case Feature:
+	case conventionalcommits.Feature:
 		return currentVersion.IncMinor()
-	case BreakingChange:
+	case conventionalcommits.BreakingChange:
 		return currentVersion.IncMajor()
 	}
 

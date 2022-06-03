@@ -2,12 +2,22 @@ package util
 
 import "strings"
 
-func OneIsPrefix(s string, possiblePrefixes []string) bool {
+type IsOnePrefixResult struct {
+	IsOnePrefix bool
+	Prefix      string
+}
+
+func IsOnePrefix(s string, possiblePrefixes []string) IsOnePrefixResult {
 	for _, possiblePrefix := range possiblePrefixes {
 		if strings.HasPrefix(s, possiblePrefix) {
-			return true
+			return IsOnePrefixResult{
+				IsOnePrefix: true,
+				Prefix:      possiblePrefix,
+			}
 		}
 	}
 
-	return false
+	return IsOnePrefixResult{
+		IsOnePrefix: false,
+	}
 }
