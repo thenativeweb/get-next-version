@@ -30,5 +30,5 @@ func CalculateNextVersion(
 		return currentVersion.IncMajor()
 	}
 
-	panic("Invalid conventional commit type")
+	panic("invalid conventional commit type")
 }
