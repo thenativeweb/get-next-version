@@ -46,7 +46,7 @@ func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (Con
 	var latestReleaseVersion *semver.Version
 	var conventionalCommitTypes []conventionalcommits.ConventionalCommitType
 	for currentCommitErr == nil {
-		var wasPartOfLastRelease = false
+		wasPartOfLastRelease := false
 		for _, tag := range tags {
 			if tag.Hash() == currentCommit.Hash {
 				latestReleaseVersion, err = semver.NewVersion(tag.Name().Short())
