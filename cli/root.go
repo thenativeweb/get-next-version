@@ -2,9 +2,9 @@ package cli
 
 import (
 	"fmt"
-	"os"
 
 	gogit "github.com/go-git/go-git/v5"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/thenativeweb/getnextversion/git"
 	"github.com/thenativeweb/getnextversion/versioning"
@@ -12,25 +12,32 @@ import (
 
 var RootCommand = &cobra.Command{
 	Use:   "get-next-version",
-	Short: "Calculate the next version number for your project.",
-	Long:  "Calculate the next version number for your project based on your git history.",
+	Short: "Get the next semantic version for your project",
+	Long:  "Get the next semantic version for your project based on your git history.",
 	Run: func(command *cobra.Command, args []string) {
 		if len(args) != 1 {
 			fmt.Println(command.UsageString())
-			os.Exit(1)
+			return
 		}
 
 		repository, err := gogit.PlainOpen(args[0])
 		if err != nil {
-			panic(err)
+			log.Fatal().Msg(err.Error())
 		}
 
 		result, err := git.GetConventionalCommitTypesSinceLastRelease(repository)
 		if err != nil {
-			panic(err)
+			if err == git.NoCommitsFoundError {
+				fmt.Println("0.0.1")
+				return
+			}
+			log.Fatal().Msg(err.Error())
 		}
 
-		nextVersion := versioning.CalculateNextVersion(result.LatestReleaseVersion, result.ConventionalCommitTypes)
+		nextVersion, err := versioning.CalculateNextVersion(result.LatestReleaseVersion, result.ConventionalCommitTypes)
+		if err != nil {
+			log.Fatal().Msg(err.Error())
+		}
 
 		fmt.Println(nextVersion.String())
 	},

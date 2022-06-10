@@ -1,11 +1,13 @@
 package util
 
-func MustFind[T comparable](slice []T, itemToFind T) int {
+import "errors"
+
+func MustFind[T comparable](slice []T, itemToFind T) (int, error) {
 	for index, item := range slice {
 		if item == itemToFind {
-			return index
+			return index, nil
 		}
 	}
 
-	panic("item not found")
+	return 0, errors.New("item not found")
 }

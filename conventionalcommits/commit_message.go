@@ -75,12 +75,20 @@ func CommitMessageToType(message string) (Type, error) {
 		return Chore, errors.New("invalid message body for conventional commit message")
 	}
 
-	breakingIndicatorIndex := util.MustFind(bodyRegex.SubexpNames(), "breaking")
+	breakingIndicatorIndex, err := util.MustFind(bodyRegex.SubexpNames(), "breaking")
+	if err != nil {
+		return Chore, err
+	}
+
 	breakingIndicator := parsedMesageBody[breakingIndicatorIndex]
 	if breakingIndicator == "!" {
 		return BreakingChange, nil
 	}
 
-	typeIndex := util.MustFind(bodyRegex.SubexpNames(), "type")
+	typeIndex, err := util.MustFind(bodyRegex.SubexpNames(), "type")
+	if err != nil {
+		return Chore, err
+	}
+
 	return StringToType(parsedMesageBody[typeIndex])
 }
