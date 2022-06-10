@@ -19,5 +19,6 @@ func IsOnePrefix(s string, possiblePrefixes []string) IsOnePrefixResult {
 
 	return IsOnePrefixResult{
 		IsOnePrefix: false,
+		Prefix:      "",
 	}
 }
