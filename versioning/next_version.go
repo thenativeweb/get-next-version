@@ -7,7 +7,7 @@ import (
 
 func CalculateNextVersion(
 	currentVersion *semver.Version,
-	conventionalCommitTypes []conventionalcommits.ConventionalCommitType,
+	conventionalCommitTypes []conventionalcommits.Type,
 ) semver.Version {
 	currentlyDetectedChange := conventionalcommits.Chore
 	for _, commitType := range conventionalCommitTypes {

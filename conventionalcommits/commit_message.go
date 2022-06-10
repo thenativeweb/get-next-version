@@ -1,6 +1,7 @@
 package conventionalcommits
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
 	"strings"
@@ -8,33 +9,34 @@ import (
 	"github.com/thenativeweb/getnextversion/util"
 )
 
-var conventionalCommitBodyRegex *regexp.Regexp
+var bodyRegex *regexp.Regexp
+var breakingFooterTokens = []string{"BREAKING CHANGE", "BREAKING-CHANGE"}
+var footerTokenSeperators = []string{": ", " #"}
 
-func init() {
-	conventionalCommitPrefixes := []string{"fix", "feat", "build", "chore", "ci", "docs", "style", "refector", "perf", "test"}
-	conventionalCommitPrefixesRegexString := ""
-	for _, prefix := range conventionalCommitPrefixes {
-		conventionalCommitPrefixesRegexString += prefix + "|"
+func initCommitMessage() {
+	typesRegexString := ""
+	for _, prefix := range allTypes {
+		typesRegexString += prefix + "|"
 	}
-	conventionalCommitPrefixesRegexString = strings.TrimSuffix(conventionalCommitPrefixesRegexString, "|")
-	conventionalCommitBodyRegexString := fmt.Sprintf("(?P<type>%s)(\\(.*\\))?(?P<breaking>\\!)?:.*", conventionalCommitPrefixesRegexString)
+	typesRegexString = strings.TrimSuffix(typesRegexString, "|")
+	conventionalCommitBodyRegexString := fmt.Sprintf(
+		"(?P<type>(?i:%s))(\\(.*\\))?(?P<breaking>\\!)?:.*",
+		typesRegexString,
+	)
 
-	conventionalCommitBodyRegex = regexp.MustCompile(conventionalCommitBodyRegexString)
+	bodyRegex = regexp.MustCompile(conventionalCommitBodyRegexString)
 }
 
-func CommitMessageToConventionalCommitType(message string) ConventionalCommitType {
-	var body string
-	var footers []string
-
+func splitCommitMessage(message string) (body string, footers []string) {
 	segments := strings.Split(message, "\n")
 	var bodySegments []string
 	var lastBodyIndex int
 	for i, currentSegment := range segments {
+		lastBodyIndex = i
 		if currentSegment == "" {
 			break
 		}
 		bodySegments = append(bodySegments, currentSegment)
-		lastBodyIndex = i
 	}
 	body = strings.Join(bodySegments, "\n")
 
@@ -43,25 +45,42 @@ func CommitMessageToConventionalCommitType(message string) ConventionalCommitTyp
 		if currentSegment == "" {
 			footers = append(footers, strings.Join(currentFooterSegments, "\n"))
 			currentFooterSegments = []string{}
+			continue
 		}
+
 		currentFooterSegments = append(currentFooterSegments, currentSegment)
 	}
+	footers = append(footers, strings.Join(currentFooterSegments, "\n"))
 
+	return body, footers
+}
+
+func CommitMessageToType(message string) (Type, error) {
+	body, footers := splitCommitMessage(message)
+
+	var breakingFooterPrefixes []string
+	for _, token := range breakingFooterTokens {
+		for _, seperator := range footerTokenSeperators {
+			breakingFooterPrefixes = append(breakingFooterPrefixes, token+seperator)
+		}
+	}
 	for _, footer := range footers {
-		if util.IsOnePrefix(footer, []string{"BREAKING CHANGE: ", "BREAKING CHANGE #"}).IsOnePrefix {
-			return BreakingChange
+		if util.IsOnePrefix(footer, breakingFooterPrefixes).IsOnePrefix {
+			return BreakingChange, nil
 		}
 	}
 
-	parsedMesageBody := conventionalCommitBodyRegex.FindStringSubmatch(body)
+	parsedMesageBody := bodyRegex.FindStringSubmatch(body)
 	if parsedMesageBody == nil {
-		return Chore
+		return Chore, errors.New("invalid message body for conventional commit message")
 	}
 
-	breakingIndicator := parsedMesageBody[3]
+	breakingIndicatorIndex := util.MustFind(bodyRegex.SubexpNames(), "breaking")
+	breakingIndicator := parsedMesageBody[breakingIndicatorIndex]
 	if breakingIndicator == "!" {
-		return BreakingChange
+		return BreakingChange, nil
 	}
 
-	return fromString(parsedMesageBody[1])
+	typeIndex := util.MustFind(bodyRegex.SubexpNames(), "type")
+	return StringToType(parsedMesageBody[typeIndex])
 }

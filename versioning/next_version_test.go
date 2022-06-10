@@ -12,72 +12,72 @@ import (
 func TestCalculateNextVersion(t *testing.T) {
 	tests := []struct {
 		currentVersion         *semver.Version
-		conventionalCommitType []conventionalcommits.ConventionalCommitType
+		conventionalCommitType []conventionalcommits.Type
 		expectedNewVersion     *semver.Version
 	}{
 		{
 			currentVersion:         semver.MustParse("1.0.0"),
-			conventionalCommitType: []conventionalcommits.ConventionalCommitType{},
+			conventionalCommitType: []conventionalcommits.Type{},
 			expectedNewVersion:     semver.MustParse("1.0.0"),
 		},
 		{
 			currentVersion:         semver.MustParse("1.0.0"),
-			conventionalCommitType: []conventionalcommits.ConventionalCommitType{conventionalcommits.Chore},
+			conventionalCommitType: []conventionalcommits.Type{conventionalcommits.Chore},
 			expectedNewVersion:     semver.MustParse("1.0.0"),
 		},
 		{
 			currentVersion:         semver.MustParse("1.0.0"),
-			conventionalCommitType: []conventionalcommits.ConventionalCommitType{conventionalcommits.Fix},
+			conventionalCommitType: []conventionalcommits.Type{conventionalcommits.Fix},
 			expectedNewVersion:     semver.MustParse("1.0.1"),
 		},
 		{
 			currentVersion:         semver.MustParse("1.0.0"),
-			conventionalCommitType: []conventionalcommits.ConventionalCommitType{conventionalcommits.Feature},
+			conventionalCommitType: []conventionalcommits.Type{conventionalcommits.Feature},
 			expectedNewVersion:     semver.MustParse("1.1.0"),
 		},
 		{
 			currentVersion:         semver.MustParse("1.0.0"),
-			conventionalCommitType: []conventionalcommits.ConventionalCommitType{conventionalcommits.BreakingChange},
+			conventionalCommitType: []conventionalcommits.Type{conventionalcommits.BreakingChange},
 			expectedNewVersion:     semver.MustParse("2.0.0"),
 		},
 		{
 			currentVersion:         semver.MustParse("1.0.1"),
-			conventionalCommitType: []conventionalcommits.ConventionalCommitType{conventionalcommits.Feature},
+			conventionalCommitType: []conventionalcommits.Type{conventionalcommits.Feature},
 			expectedNewVersion:     semver.MustParse("1.1.0"),
 		},
 		{
 			currentVersion:         semver.MustParse("1.1.1"),
-			conventionalCommitType: []conventionalcommits.ConventionalCommitType{conventionalcommits.BreakingChange},
+			conventionalCommitType: []conventionalcommits.Type{conventionalcommits.BreakingChange},
 			expectedNewVersion:     semver.MustParse("2.0.0"),
 		},
 		{
 			currentVersion:         semver.MustParse("1.0.0"),
-			conventionalCommitType: []conventionalcommits.ConventionalCommitType{conventionalcommits.Chore, conventionalcommits.Fix, conventionalcommits.Feature, conventionalcommits.BreakingChange},
+			conventionalCommitType: []conventionalcommits.Type{conventionalcommits.Chore, conventionalcommits.Fix, conventionalcommits.Feature, conventionalcommits.BreakingChange},
 			expectedNewVersion:     semver.MustParse("2.0.0"),
 		},
 		{
 			currentVersion:         semver.MustParse("1.0.0"),
-			conventionalCommitType: []conventionalcommits.ConventionalCommitType{conventionalcommits.BreakingChange, conventionalcommits.Feature, conventionalcommits.Fix, conventionalcommits.Chore},
+			conventionalCommitType: []conventionalcommits.Type{conventionalcommits.BreakingChange, conventionalcommits.Feature, conventionalcommits.Fix, conventionalcommits.Chore},
 			expectedNewVersion:     semver.MustParse("2.0.0"),
 		},
 		{
 			currentVersion:         semver.MustParse("1.0.0"),
-			conventionalCommitType: []conventionalcommits.ConventionalCommitType{conventionalcommits.Chore, conventionalcommits.Chore},
+			conventionalCommitType: []conventionalcommits.Type{conventionalcommits.Chore, conventionalcommits.Chore},
 			expectedNewVersion:     semver.MustParse("1.0.0"),
 		},
 		{
 			currentVersion:         semver.MustParse("1.0.0"),
-			conventionalCommitType: []conventionalcommits.ConventionalCommitType{conventionalcommits.Fix, conventionalcommits.Fix},
+			conventionalCommitType: []conventionalcommits.Type{conventionalcommits.Fix, conventionalcommits.Fix},
 			expectedNewVersion:     semver.MustParse("1.0.1"),
 		},
 		{
 			currentVersion:         semver.MustParse("1.0.0"),
-			conventionalCommitType: []conventionalcommits.ConventionalCommitType{conventionalcommits.Feature, conventionalcommits.Feature},
+			conventionalCommitType: []conventionalcommits.Type{conventionalcommits.Feature, conventionalcommits.Feature},
 			expectedNewVersion:     semver.MustParse("1.1.0"),
 		},
 		{
 			currentVersion:         semver.MustParse("1.0.0"),
-			conventionalCommitType: []conventionalcommits.ConventionalCommitType{conventionalcommits.BreakingChange, conventionalcommits.BreakingChange},
+			conventionalCommitType: []conventionalcommits.Type{conventionalcommits.BreakingChange, conventionalcommits.BreakingChange},
 			expectedNewVersion:     semver.MustParse("2.0.0"),
 		},
 	}
