@@ -29,7 +29,7 @@ func TestStringToType(t *testing.T) {
 			continue
 		}
 
-		assert.Nil(t, err)
+		assert.NoError(t, err)
 		assert.Equal(t, test.expectedType, commitType)
 	}
 }

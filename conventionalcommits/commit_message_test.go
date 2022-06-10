@@ -39,7 +39,7 @@ func TestCommitMessageToType(t *testing.T) {
 			continue
 		}
 
-		assert.Nil(t, err)
+		assert.NoError(t, err)
 		assert.Equal(t, test.expectedCommitType, commitType)
 	}
 }
