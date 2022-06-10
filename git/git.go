@@ -9,7 +9,7 @@ import (
 
 type ConventionalCommmitTypesResult struct {
 	LatestReleaseVersion    *semver.Version
-	ConventionalCommitTypes []conventionalcommits.ConventionalCommitType
+	ConventionalCommitTypes []conventionalcommits.Type
 }
 
 func getAllTags(repository *git.Repository) ([]*plumbing.Reference, error) {
@@ -44,7 +44,7 @@ func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (Con
 
 	currentCommit, currentCommitErr := commitIterator.Next()
 	var latestReleaseVersion *semver.Version
-	var conventionalCommitTypes []conventionalcommits.ConventionalCommitType
+	var conventionalCommitTypes []conventionalcommits.Type
 	for currentCommitErr == nil {
 		wasPartOfLastRelease := false
 		for _, tag := range tags {
@@ -59,9 +59,14 @@ func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (Con
 		if wasPartOfLastRelease {
 			break
 		}
+
+		currentCommitType, err := conventionalcommits.CommitMessageToType(currentCommit.Message)
+		if err != nil {
+			currentCommitType = conventionalcommits.Chore
+		}
 		conventionalCommitTypes = append(
 			conventionalCommitTypes,
-			conventionalcommits.CommitMessageToConventionalCommitType(currentCommit.Message),
+			currentCommitType,
 		)
 		currentCommit, currentCommitErr = commitIterator.Next()
 	}
