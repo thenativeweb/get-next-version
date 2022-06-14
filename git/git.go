@@ -1,11 +1,16 @@
 package git
 
 import (
+	"errors"
+	"io"
+
 	"github.com/Masterminds/semver"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/thenativeweb/getnextversion/conventionalcommits"
 )
+
+var NoCommitsFoundError = errors.New("no commits found")
 
 type ConventionalCommmitTypesResult struct {
 	LatestReleaseVersion    *semver.Version
@@ -72,6 +77,10 @@ func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (Con
 	}
 
 	if currentCommitErr != nil {
+		if currentCommitErr == io.EOF && currentCommit == nil {
+			return ConventionalCommmitTypesResult{}, NoCommitsFoundError
+		}
+
 		return ConventionalCommmitTypesResult{}, currentCommitErr
 	}
 

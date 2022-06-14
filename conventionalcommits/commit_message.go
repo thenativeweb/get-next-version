@@ -82,5 +82,6 @@ func CommitMessageToType(message string) (Type, error) {
 	}
 
 	typeIndex := util.MustFind(bodyRegex.SubexpNames(), "type")
+
 	return StringToType(parsedMesageBody[typeIndex])
 }
