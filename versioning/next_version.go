@@ -1,8 +1,6 @@
 package versioning
 
 import (
-	"errors"
-
 	"github.com/Masterminds/semver"
 	"github.com/thenativeweb/getnextversion/conventionalcommits"
 )
@@ -10,7 +8,7 @@ import (
 func CalculateNextVersion(
 	currentVersion *semver.Version,
 	conventionalCommitTypes []conventionalcommits.Type,
-) (semver.Version, error) {
+) semver.Version {
 	currentlyDetectedChange := conventionalcommits.Chore
 	for _, commitType := range conventionalCommitTypes {
 		if commitType > currentlyDetectedChange {
@@ -23,14 +21,14 @@ func CalculateNextVersion(
 
 	switch currentlyDetectedChange {
 	case conventionalcommits.Chore:
-		return *currentVersion, nil
+		return *currentVersion
 	case conventionalcommits.Fix:
-		return currentVersion.IncPatch(), nil
+		return currentVersion.IncPatch()
 	case conventionalcommits.Feature:
-		return currentVersion.IncMinor(), nil
+		return currentVersion.IncMinor()
 	case conventionalcommits.BreakingChange:
-		return currentVersion.IncMajor(), nil
+		return currentVersion.IncMajor()
 	}
 
-	return *currentVersion, errors.New("invalid conventional commit type")
+	panic("invalid conventional commit type")
 }

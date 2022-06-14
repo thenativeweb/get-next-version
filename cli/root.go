@@ -34,11 +34,7 @@ var RootCommand = &cobra.Command{
 			log.Fatal().Msg(err.Error())
 		}
 
-		nextVersion, err := versioning.CalculateNextVersion(result.LatestReleaseVersion, result.ConventionalCommitTypes)
-		if err != nil {
-			log.Fatal().Msg(err.Error())
-		}
-
+		nextVersion := versioning.CalculateNextVersion(result.LatestReleaseVersion, result.ConventionalCommitTypes)
 		fmt.Println(nextVersion.String())
 	},
 }

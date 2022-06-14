@@ -11,22 +11,24 @@ func TestMustFind(t *testing.T) {
 	tests := []struct {
 		slice         []string
 		itemToFind    string
-		withError     bool
+		willPanic     bool
 		expectedIndex int
 	}{
-		{slice: []string{}, itemToFind: "some-item", withError: true, expectedIndex: 0},
-		{slice: []string{"some-item"}, itemToFind: "some-item", withError: false, expectedIndex: 0},
-		{slice: []string{"other-item", "some-item"}, itemToFind: "some-item", withError: false, expectedIndex: 1},
-		{slice: []string{"other-item", "some-item", "some-item"}, itemToFind: "some-item", withError: false, expectedIndex: 1},
+		{slice: []string{}, itemToFind: "some-item", willPanic: true, expectedIndex: 0},
+		{slice: []string{"some-item"}, itemToFind: "some-item", willPanic: false, expectedIndex: 0},
+		{slice: []string{"other-item", "some-item"}, itemToFind: "some-item", willPanic: false, expectedIndex: 1},
+		{slice: []string{"other-item", "some-item", "some-item"}, itemToFind: "some-item", willPanic: false, expectedIndex: 1},
 	}
 
 	for _, test := range tests {
-		index, err := util.MustFind(test.slice, test.itemToFind)
-
-		if test.withError {
-			assert.Error(t, err)
+		if test.willPanic {
+			assert.Panics(t, func() {
+				util.MustFind(test.slice, test.itemToFind)
+			})
 			continue
 		}
+
+		index := util.MustFind(test.slice, test.itemToFind)
 		assert.Equal(t, test.expectedIndex, index)
 	}
 }
