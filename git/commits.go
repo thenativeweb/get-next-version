@@ -32,7 +32,7 @@ func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (Con
 
 	currentCommit, currentCommitErr := commitIterator.Next()
 	var latestReleaseVersion *semver.Version
-	var conventionalCommitTypes []conventionalcommits.Type
+	conventionalCommitTypes := []conventionalcommits.Type{}
 	for currentCommitErr == nil {
 		wasPartOfLastRelease := false
 		for _, tag := range tags {
