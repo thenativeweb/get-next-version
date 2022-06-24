@@ -27,7 +27,7 @@ var RootCommand = &cobra.Command{
 
 		result, err := git.GetConventionalCommitTypesSinceLastRelease(repository)
 		if err != nil {
-			if err == git.NoCommitsFoundError {
+			if err == git.ErrNoCommitsFound {
 				fmt.Println("0.0.1")
 				return
 			}
