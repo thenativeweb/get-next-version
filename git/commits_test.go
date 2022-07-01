@@ -46,12 +46,36 @@ func TestGetConventionalCommitTypesSinceLatestRelease(t *testing.T) {
 		},
 		{
 			commitHistory: []commit{
-				{message: "chore: Do something!", tag: "1.0.0"},
+				{message: "chore: irelevant", tag: "0.0.1"},
+				{message: "feat: because it is", tag: ""},
+				{message: "feat(scope)!: before the last tag", tag: "0.0.2"},
+				{message: "chore: Do something", tag: "1.0.0"},
 				{message: "chore: Do something else", tag: ""},
 			},
 			doExpectError:                   false,
 			expectedLastVersion:             semver.MustParse("1.0.0"),
 			expectedConventionalCommitTypes: []conventionalcommits.Type{conventionalcommits.Chore},
+		},
+		{
+			commitHistory: []commit{
+				{message: "chore: Do something", tag: "1.0.0"},
+				{message: "chore: non breaking", tag: ""},
+				{message: "fix: non breaking", tag: ""},
+				{message: "feat: non breaking", tag: ""},
+				{message: "chore!: breaking", tag: ""},
+				{message: "fix(with scope)!: breaking", tag: ""},
+				{message: "feat: breaking\n\nBREAKING-CHANGE: with footer", tag: ""},
+			},
+			doExpectError:       false,
+			expectedLastVersion: semver.MustParse("1.0.0"),
+			expectedConventionalCommitTypes: []conventionalcommits.Type{
+				conventionalcommits.Chore,
+				conventionalcommits.Fix,
+				conventionalcommits.Feature,
+				conventionalcommits.BreakingChange,
+				conventionalcommits.BreakingChange,
+				conventionalcommits.BreakingChange,
+			},
 		},
 	}
 
@@ -79,7 +103,7 @@ func TestGetConventionalCommitTypesSinceLatestRelease(t *testing.T) {
 
 		assert.NoError(t, err)
 		assert.Equal(t, test.expectedLastVersion, actual.LatestReleaseVersion)
-		assert.Equal(t, test.expectedConventionalCommitTypes, actual.ConventionalCommitTypes)
+		assert.ElementsMatch(t, test.expectedConventionalCommitTypes, actual.ConventionalCommitTypes)
 	}
 
 }
