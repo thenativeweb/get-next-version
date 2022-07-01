@@ -6,35 +6,18 @@ import (
 
 	"github.com/Masterminds/semver"
 	"github.com/go-git/go-git/v5"
-	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/thenativeweb/getnextversion/conventionalcommits"
 )
-
-var NoCommitsFoundError = errors.New("no commits found")
 
 type ConventionalCommmitTypesResult struct {
 	LatestReleaseVersion    *semver.Version
 	ConventionalCommitTypes []conventionalcommits.Type
 }
 
-func getAllTags(repository *git.Repository) ([]*plumbing.Reference, error) {
-	tagsIterator, err := repository.Tags()
-	if err != nil {
-		return []*plumbing.Reference{}, err
-	}
-
-	var tags []*plumbing.Reference
-
-	tagsIterator.ForEach(func(tag *plumbing.Reference) error {
-		tags = append(tags, tag)
-		return nil
-	})
-
-	return tags, nil
-}
+var ErrNoCommitsFound = errors.New("no commits found")
 
 func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (ConventionalCommmitTypesResult, error) {
-	tags, err := getAllTags(repository)
+	tags, err := GetAllTags(repository)
 	if err != nil {
 		return ConventionalCommmitTypesResult{}, err
 	}
@@ -49,7 +32,7 @@ func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (Con
 
 	currentCommit, currentCommitErr := commitIterator.Next()
 	var latestReleaseVersion *semver.Version
-	var conventionalCommitTypes []conventionalcommits.Type
+	conventionalCommitTypes := []conventionalcommits.Type{}
 	for currentCommitErr == nil {
 		wasPartOfLastRelease := false
 		for _, tag := range tags {
@@ -78,7 +61,7 @@ func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (Con
 
 	if currentCommitErr != nil {
 		if currentCommitErr == io.EOF && currentCommit == nil {
-			return ConventionalCommmitTypesResult{}, NoCommitsFoundError
+			return ConventionalCommmitTypesResult{}, ErrNoCommitsFound
 		}
 
 		return ConventionalCommmitTypesResult{}, currentCommitErr
