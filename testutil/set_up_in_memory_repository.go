@@ -12,7 +12,7 @@ func SetUpInMemoryRepository() *git.Repository {
 
 	repository, _ := git.Init(storer, fs)
 	worktree, _ := repository.Worktree()
-	worktree.Commit("Initial Commit", CommitOptions)
+	worktree.Commit("Initial Commit", CreateCommitOptions())
 
 	return repository
 }

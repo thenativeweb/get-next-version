@@ -5,9 +5,11 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/object"
 )
 
-var CommitOptions = &git.CommitOptions{
-	Author: &object.Signature{
-		Name:  "John Doe",
-		Email: "john.doe@example.com",
-	},
+func CreateCommitOptions() *git.CommitOptions {
+	return &git.CommitOptions{
+		Author: &object.Signature{
+			Name:  "John Doe",
+			Email: "john.doe@example.com",
+		},
+	}
 }

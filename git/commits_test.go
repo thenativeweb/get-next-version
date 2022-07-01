@@ -46,7 +46,7 @@ func TestGetConventionalCommitTypesSinceLatestRelease(t *testing.T) {
 		},
 		{
 			commitHistory: []commit{
-				{message: "chore: Do something", tag: "1.0.0"},
+				{message: "chore: Do something!", tag: "1.0.0"},
 				{message: "chore: Do something else", tag: ""},
 			},
 			doExpectError:                   false,
@@ -57,10 +57,10 @@ func TestGetConventionalCommitTypesSinceLatestRelease(t *testing.T) {
 
 	for _, test := range tests {
 		repository := testutil.SetUpInMemoryRepository()
+		worktree, _ := repository.Worktree()
 
 		for _, commit := range test.commitHistory {
-			worktree, _ := repository.Worktree()
-			worktree.Commit(commit.message, testutil.CommitOptions)
+			worktree.Commit(commit.message, testutil.CreateCommitOptions())
 
 			if commit.tag == "" {
 				continue
