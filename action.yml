@@ -4,4 +4,4 @@ description: >
   commits and taggs the repository with the new version.
 runs:
   using: 'docker'
-  image: 'action/Dockerfile'
+  image: 'Dockerfile'
