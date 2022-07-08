@@ -1,0 +1,7 @@
+name: 'get-next-version'
+description: >
+  Calculates the next version of your project based on conventional
+  commits and taggs the repository with the new version.
+runs:
+  using: 'docker'
+  image: 'action/Dockerfile'
