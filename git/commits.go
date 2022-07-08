@@ -2,6 +2,7 @@ package git
 
 import (
 	"errors"
+	"fmt"
 	"io"
 
 	"github.com/Masterminds/semver"
@@ -19,14 +20,17 @@ var ErrNoCommitsFound = errors.New("no commits found")
 func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (ConventionalCommmitTypesResult, error) {
 	tags, err := GetAllTags(repository)
 	if err != nil {
+		fmt.Println("Couldn't get tags")
 		return ConventionalCommmitTypesResult{}, err
 	}
 	head, err := repository.Head()
 	if err != nil {
+		fmt.Println("Couldn't get head")
 		return ConventionalCommmitTypesResult{}, err
 	}
 	commitIterator, err := repository.Log(&git.LogOptions{From: head.Hash()})
 	if err != nil {
+		fmt.Println("Couldn't get iterator")
 		return ConventionalCommmitTypesResult{}, err
 	}
 
@@ -64,6 +68,7 @@ func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (Con
 			return ConventionalCommmitTypesResult{}, ErrNoCommitsFound
 		}
 
+		fmt.Println("Error with commit iterator")
 		return ConventionalCommmitTypesResult{}, currentCommitErr
 	}
 

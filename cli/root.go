@@ -22,7 +22,6 @@ var RootCommand = &cobra.Command{
 
 		repository, err := gogit.PlainOpen(args[0])
 		if err != nil {
-			fmt.Printf("Could not open repo.")
 			log.Fatal().Msg(err.Error())
 		}
 
@@ -32,7 +31,6 @@ var RootCommand = &cobra.Command{
 				fmt.Println("0.0.1")
 				return
 			}
-			fmt.Printf("Error getting last commit.")
 			log.Fatal().Msg(err.Error())
 		}
 
