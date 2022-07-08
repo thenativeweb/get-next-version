@@ -48,7 +48,7 @@ build-windows-amd64: qa clean detect-version
 
 build: build-auto
 
-build-all: build-auto build-darwin-amd64 build-darwin-arm64 build-linux-amd64 build-windows-amd64
+build-all: build-darwin-amd64 build-darwin-arm64 build-linux-amd64 build-windows-amd64
 
 .PHONY: analyse \
 		benchmark \
@@ -63,4 +63,4 @@ build-all: build-auto build-darwin-amd64 build-darwin-arm64 build-linux-amd64 bu
 		coverage \
 		detect-version \
 		qa \
-		test \
+		test
