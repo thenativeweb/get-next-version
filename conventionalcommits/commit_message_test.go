@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/thenativeweb/getnextversion/conventionalcommits"
+	"github.com/thenativeweb/get-next-version/conventionalcommits"
 )
 
 func TestCommitMessageToType(t *testing.T) {

@@ -5,8 +5,8 @@ import (
 
 	"github.com/Masterminds/semver"
 	"github.com/stretchr/testify/assert"
-	"github.com/thenativeweb/getnextversion/conventionalcommits"
-	"github.com/thenativeweb/getnextversion/versioning"
+	"github.com/thenativeweb/get-next-version/conventionalcommits"
+	"github.com/thenativeweb/get-next-version/versioning"
 )
 
 func TestCalculateNextVersion(t *testing.T) {

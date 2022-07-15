@@ -32,19 +32,19 @@ detect-version:
 	@echo "Current Version: ${VERSION}"
 
 build-auto: qa clean detect-version
-	@go build -o ./build/get-next-version
+	@go build -ldflags="-X 'github.com/thenativeweb/get-next-version/version.Version=$(VERSION)'" -o ./build/get-next-version
 
 build-darwin-amd64: qa clean detect-version
-	@GOOS=darwin GOARCH=amd64 go build -o ./build/get-next-version-darwin-amd64
+	@GOOS=darwin GOARCH=amd64 go build -ldflags="-X 'github.com/thenativeweb/get-next-version/version.Version=$(VERSION)'" -o ./build/get-next-version-darwin-amd64
 
 build-darwin-arm64: qa clean detect-version
-	@GOOS=darwin GOARCH=arm64 go build -o ./build/get-next-version-darwin-arm64
+	@GOOS=darwin GOARCH=arm64 go build -ldflags="-X 'github.com/thenativeweb/get-next-version/version.Version=$(VERSION)'" -o ./build/get-next-version-darwin-arm64
 
 build-linux-amd64: qa clean detect-version
-	@GOOS=linux GOARCH=amd64 go build -o ./build/get-next-version-linux-amd64
+	@GOOS=linux GOARCH=amd64 go build -ldflags="-X 'github.com/thenativeweb/get-next-version/version.Version=$(VERSION)'" -o ./build/get-next-version-linux-amd64
 
 build-windows-amd64: qa clean detect-version
-	@GOOS=windows GOARCH=amd64 go build -o ./build/get-next-version-windows-amd64.exe
+	@GOOS=windows GOARCH=amd64 go build -ldflags="-X 'github.com/thenativeweb/get-next-version/version.Version=$(VERSION)'" -o ./build/get-next-version-windows-amd64.exe
 
 build: build-auto
 
