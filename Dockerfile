@@ -8,6 +8,9 @@ RUN make build
 
 FROM debian:bullseye
 
+RUN apt update
+RUN apt install -y git
+
 RUN mkdir /action
 WORKDIR /action
 
