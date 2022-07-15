@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/thenativeweb/getnextversion/util"
+	"github.com/thenativeweb/get-next-version/util"
 )
 
 func TestOneIsPrefix(t *testing.T) {

@@ -5,9 +5,9 @@ import (
 
 	"github.com/Masterminds/semver"
 	"github.com/stretchr/testify/assert"
-	"github.com/thenativeweb/getnextversion/conventionalcommits"
-	"github.com/thenativeweb/getnextversion/git"
-	"github.com/thenativeweb/getnextversion/testutil"
+	"github.com/thenativeweb/get-next-version/conventionalcommits"
+	"github.com/thenativeweb/get-next-version/git"
+	"github.com/thenativeweb/get-next-version/testutil"
 )
 
 type commit struct {

@@ -6,8 +6,8 @@ import (
 	gogit "github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/stretchr/testify/assert"
-	"github.com/thenativeweb/getnextversion/git"
-	"github.com/thenativeweb/getnextversion/testutil"
+	"github.com/thenativeweb/get-next-version/git"
+	"github.com/thenativeweb/get-next-version/testutil"
 )
 
 func TestGetAllTags(t *testing.T) {

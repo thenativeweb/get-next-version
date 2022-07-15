@@ -1,4 +1,4 @@
-module github.com/thenativeweb/getnextversion
+module github.com/thenativeweb/get-next-version
 
 go 1.18
 

@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/thenativeweb/getnextversion/util"
+	"github.com/thenativeweb/get-next-version/util"
 )
 
 var bodyRegex *regexp.Regexp

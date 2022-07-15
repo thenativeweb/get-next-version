@@ -6,7 +6,7 @@ import (
 
 	"github.com/Masterminds/semver"
 	"github.com/go-git/go-git/v5"
-	"github.com/thenativeweb/getnextversion/conventionalcommits"
+	"github.com/thenativeweb/get-next-version/conventionalcommits"
 )
 
 type ConventionalCommmitTypesResult struct {
