@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 
+apt update
 apt install git
 
 git status
