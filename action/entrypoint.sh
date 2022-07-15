@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 apt update
-apt install git
+apt install -y git
 
 git status
 git log
