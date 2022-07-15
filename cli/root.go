@@ -10,17 +10,18 @@ import (
 	"github.com/thenativeweb/get-next-version/versioning"
 )
 
+var rootRepositoryFlag string
+
+func init() {
+	RootCommand.Flags().StringVarP(&rootRepositoryFlag, "repository", "r", ".", "path of the repository to operate on")
+}
+
 var RootCommand = &cobra.Command{
 	Use:   "get-next-version",
 	Short: "Get the next semantic version for your project",
 	Long:  "Get the next semantic version for your project based on your git history.",
-	Run: func(command *cobra.Command, args []string) {
-		if len(args) != 1 {
-			fmt.Println(command.UsageString())
-			return
-		}
-
-		repository, err := gogit.PlainOpen(args[0])
+	Run: func(command *cobra.Command, _ []string) {
+		repository, err := gogit.PlainOpen(rootRepositoryFlag)
 		if err != nil {
 			log.Fatal().Msg(err.Error())
 		}
