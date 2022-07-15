@@ -15,6 +15,6 @@ jobs:
     - name: Clone repository
       uses: actions/checkout@v3
       with:
-        ref: ${{ github.base_ref }}
+        ref: ${{ github.head_ref }}
     - name: Calculate next version
       uses: ./
