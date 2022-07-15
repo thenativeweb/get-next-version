@@ -21,12 +21,10 @@ func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (Con
 	if err != nil {
 		return ConventionalCommmitTypesResult{}, err
 	}
-
 	head, err := repository.Head()
 	if err != nil {
 		return ConventionalCommmitTypesResult{}, err
 	}
-
 	commitIterator, err := repository.Log(&git.LogOptions{From: head.Hash()})
 	if err != nil {
 		return ConventionalCommmitTypesResult{}, err
@@ -35,12 +33,10 @@ func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (Con
 	currentCommit, currentCommitErr := commitIterator.Next()
 	var latestReleaseVersion *semver.Version
 	conventionalCommitTypes := []conventionalcommits.Type{}
-
 	for currentCommitErr == nil {
 		wasPartOfLastRelease := false
 		for _, tag := range tags {
 			if tag.Hash() == currentCommit.Hash {
-
 				latestReleaseVersion, err = semver.NewVersion(tag.Name().Short())
 				if err == nil {
 					wasPartOfLastRelease = true
@@ -48,7 +44,6 @@ func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (Con
 				}
 			}
 		}
-
 		if wasPartOfLastRelease {
 			break
 		}
@@ -57,7 +52,6 @@ func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (Con
 		if err != nil {
 			currentCommitType = conventionalcommits.Chore
 		}
-
 		conventionalCommitTypes = append(
 			conventionalCommitTypes,
 			currentCommitType,
