@@ -2,6 +2,9 @@ name: 'get-next-version'
 description: >
   Calculates the next version of your project based on conventional
   commits and taggs the repository with the new version.
+outputs:
+  version:
+    description: 'New semantic version for the repository'
 runs:
   using: 'docker'
   image: 'Dockerfile'
