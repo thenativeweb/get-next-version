@@ -10,6 +10,8 @@ jobs:
     steps:
     - name: Clone repository
       uses: actions/checkout@v3
+      with:
+       - ref: ${{ github.base_ref }}
     - name: Use Go
       uses: actions/setup-go@v3
       with:
