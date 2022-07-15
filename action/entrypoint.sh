@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+apt install git
+
 git status
 git log
 
