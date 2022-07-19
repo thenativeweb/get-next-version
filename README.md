@@ -37,10 +37,10 @@ By default, output will be shown in a human-readable format. If you want to show
 
 ```shell
 # Show output in JSON format
-$ get-next-version --fornat json
+$ get-next-version --format json
 
 # Show output in GitHub Action format
-$ get-next-version --fornat github-action
+$ get-next-version --format github-action
 ```
 
 ## Using the GitHub Action
