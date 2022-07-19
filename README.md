@@ -47,7 +47,7 @@ $ get-next-version --format github-action
 
 For convenience, you may use the GitHub Action when running `get-next-version` inside a workflow on GitHub.
 
-**NOTE: When cloning the repository, make sure to set the `fetch-depth` option to `0`, otherwise `get-next-version` will not be able to analyse the history of the repository!**
+**⚠️⚠️⚠️ When cloning the repository, make sure to set the `fetch-depth` option to `0`, otherwise `get-next-version` will not be able to analyse the history of the repository! ⚠️⚠️⚠️**
 
 An example workflow that makes use of the GitHub Action is shown below:
 
