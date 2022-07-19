@@ -1,6 +1,6 @@
 # get-next-version
 
-get-next-version gets the next version for your repository according to SemVer (semantic versioning) based on conventional commits.
+get-next-version gets the next version for your repository according to semantic versioning based on conventional commits.
 
 ## Installation
 
@@ -27,12 +27,20 @@ Go to the repository and run `get-next-version`. The tool will analyse the histo
 $ get-next-version
 ```
 
-If a new version will be created, `get-next-version` exits with exit code `0`. If no new version will be created, the exit code is `2`.
-
 Optionally, you may hand over the `--repository` (or short `-r`) flag to specify the path to the repository you want to analyse, if it is not in the current working directory.
 
 ```shell
 $ get-next-version --repository <PATH>
+```
+
+By default, output will be shown in a human-readable format. If you want to show the output in a machine-readable format, you can use the `--format` (or short `-f`) flag:
+
+```shell
+# Show output in JSON format
+$ get-next-version --fornat json
+
+# Show output in GitHub Action format
+$ get-next-version --fornat github-action
 ```
 
 ## Using the GitHub Action
