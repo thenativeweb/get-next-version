@@ -1,7 +1,7 @@
 name: 'get-next-version'
 description: >
-  Gets the next version for your repository according to SemVer
-  (semantic versioning) based on conventional commits.
+  Gets the next version for your repository according to
+  semantic versioning based on conventional commits.
 outputs:
   version:
     description: 'Next version'
