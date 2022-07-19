@@ -23,18 +23,18 @@ jobs:
       id: get_next_version
       uses: ./
     - name: Create new version
-      if: ${{ steps.get_next_version.outputs.hasNextVersion }} == true
+      if: ${{ steps.get_next_version.outputs.hasNextVersion == 'true' }}
       run: |
         NEXT_VERSION=${{ steps.get_next_version.outputs.version }}
 
         git tag $NEXT_VERSION
         git push origin $NEXT_VERSION
     - name: Build artifacts
-      if: ${{ steps.get_next_version.outputs.hasNextVersion }} == true
+      if: ${{ steps.get_next_version.outputs.hasNextVersion == 'true' }}
       run: |
         make build-all
     - name: Release new version
-      if: ${{ steps.get_next_version.outputs.hasNextVersion }} == true
+      if: ${{ steps.get_next_version.outputs.hasNextVersion == 'true' }}
       uses: ncipollo/release-action@v1
       with:
         artifacts: "build/*"
