@@ -27,7 +27,7 @@ Go to the repository and run `get-next-version`. The tool will analyse the histo
 $ get-next-version
 ```
 
-*Note: If, according to semantic versionin, no new version will be created , `get-next-version` will output the current version of your repository.*
+If a new version will be created, `get-next-version` exits with exit code `0`. If no new version will be created, the exit code is `2`.
 
 Optionally, you may hand over the `--repository` (or short `-r`) flag to specify the path to the repository you want to analyse, if it is not in the current working directory.
 
@@ -55,6 +55,8 @@ jobs:
     - name: Get next version
       id: get_next_version
       uses: thenativeweb/get-next-version
-    - name: Show the version
-      run: echo ${{ steps.get_next_version.outputs.version }}
+    - name: Show the next version
+      run: |
+        echo ${{ steps.get_next_version.outputs.version }}
+        echo ${{ steps.get_next_version.outputs.hasNextVersion }}
 ```

@@ -5,6 +5,8 @@ description: >
 outputs:
   version:
     description: 'Next version'
+  hasNextVersion:
+    description: 'Whether there is a next version'
 runs:
   using: 'docker'
   image: 'Dockerfile'
