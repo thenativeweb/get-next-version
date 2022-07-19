@@ -2,7 +2,6 @@ package cli
 
 import (
 	"fmt"
-	"os"
 
 	gogit "github.com/go-git/go-git/v5"
 	"github.com/rs/zerolog/log"
@@ -51,10 +50,6 @@ var RootCommand = &cobra.Command{
 		}
 
 		nextVersion, hasNextVersion := versioning.CalculateNextVersion(result.LatestReleaseVersion, result.ConventionalCommitTypes)
-		if !hasNextVersion {
-			log.Error().Msg("no next version found")
-			os.Exit(2)
-		}
 
 		lines := cliutil.Format(nextVersion, hasNextVersion, rootFormatFlag)
 		for _, line := range lines {
