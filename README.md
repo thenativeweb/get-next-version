@@ -24,5 +24,37 @@ $ sudo mv get-next-version /usr/local/bin
 Go to the repository and run `get-next-version`. The tool will analyse the history of your repository and output the next version for your release.
 
 ```shell
-$ ./get-next-version
+$ get-next-version
+```
+
+*Note: If, according to semantic versionin, no new version will be created , `get-next-version` will output the current version of your repository.*
+
+Optionally, you may hand over the `--repository` (or short `-r`) flag to specify the path to the repository you want to analyse, if it is not in the current working directory.
+
+```shell
+$ get-next-version --repository <PATH>
+```
+
+## Using the GitHub Action
+
+For convenience, you may use the GitHub Action when running `get-next-version` inside a workflow on GitHub.
+
+```yaml
+name: Example workflow
+
+on: pull_request
+
+jobs:
+  example:
+    name: Example
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Clone repository
+      uses: actions/checkout@v3
+    - name: Get next version
+      id: get_next_version
+      uses: thenativeweb/get-next-version
+    - name: Show the version
+      run: echo ${{ steps.get_next_version.outputs.version }}
 ```
