@@ -10,6 +10,7 @@ require (
 	github.com/rs/zerolog v1.27.0
 	github.com/spf13/cobra v1.5.0
 	github.com/stretchr/testify v1.8.0
+	golang.org/x/exp v0.0.0-20220713135740-79cabaa25d75
 )
 
 require (
@@ -31,7 +32,7 @@ require (
 	github.com/xanzy/ssh-agent v0.3.0 // indirect
 	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e // indirect
 	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2 // indirect
-	golang.org/x/sys v0.0.0-20210927094055-39ccf1dd6fa6 // indirect
+	golang.org/x/sys v0.0.0-20211019181941-9d821ace8654 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
