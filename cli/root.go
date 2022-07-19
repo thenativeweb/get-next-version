@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"os"
 
 	gogit "github.com/go-git/go-git/v5"
 	"github.com/rs/zerolog/log"
@@ -20,7 +21,7 @@ var RootCommand = &cobra.Command{
 	Use:   "get-next-version",
 	Short: "Get the next semantic version for your project",
 	Long:  "Get the next semantic version for your project based on your git history.",
-	Run: func(command *cobra.Command, _ []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		repository, err := gogit.PlainOpen(rootRepositoryFlag)
 		if err != nil {
 			log.Fatal().Msg(err.Error())
@@ -35,7 +36,11 @@ var RootCommand = &cobra.Command{
 			log.Fatal().Msg(err.Error())
 		}
 
-		nextVersion := versioning.CalculateNextVersion(result.LatestReleaseVersion, result.ConventionalCommitTypes)
+		nextVersion, hasNextVersion := versioning.CalculateNextVersion(result.LatestReleaseVersion, result.ConventionalCommitTypes)
+		if !hasNextVersion {
+			log.Error().Msg("no next version found")
+			os.Exit(2)
+		}
 		fmt.Println(nextVersion.String())
 	},
 }

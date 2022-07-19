@@ -8,7 +8,7 @@ import (
 func CalculateNextVersion(
 	currentVersion *semver.Version,
 	conventionalCommitTypes []conventionalcommits.Type,
-) semver.Version {
+) (semver.Version, bool) {
 	currentlyDetectedChange := conventionalcommits.Chore
 	for _, commitType := range conventionalCommitTypes {
 		if commitType > currentlyDetectedChange {
@@ -21,13 +21,13 @@ func CalculateNextVersion(
 
 	switch currentlyDetectedChange {
 	case conventionalcommits.Chore:
-		return *currentVersion
+		return *currentVersion, false
 	case conventionalcommits.Fix:
-		return currentVersion.IncPatch()
+		return currentVersion.IncPatch(), true
 	case conventionalcommits.Feature:
-		return currentVersion.IncMinor()
+		return currentVersion.IncMinor(), true
 	case conventionalcommits.BreakingChange:
-		return currentVersion.IncMajor()
+		return currentVersion.IncMajor(), true
 	}
 
 	panic("invalid conventional commit type")

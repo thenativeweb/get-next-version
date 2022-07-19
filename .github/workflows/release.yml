@@ -15,5 +15,13 @@ jobs:
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
-    - name: Calculate next version
+    - name: Get next version
+      id: get_next_version
       uses: ./
+    - name: Release a new version
+      if: ${{ steps.get_next_version.outputs.hasNextVersion }} == 'true'
+      run: |
+        NEXT_VERSION=${{ steps.get_next_version.outputs.version }}
+
+        git tag $NEXT_VERSION
+        git push origin $NEXT_VERSION

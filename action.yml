@@ -1,10 +1,12 @@
 name: 'get-next-version'
 description: >
-  Calculates the next version of your project based on conventional
-  commits and tags the repository with the new version.
+  Gets the next version for your repository according to SemVer
+  (semantic versioning) based on conventional commits.
 outputs:
   version:
-    description: 'New semantic version for the repository'
+    description: 'Next version'
+  hasNextVersion:
+    description: 'Whether there is a next version'
 runs:
   using: 'docker'
   image: 'Dockerfile'
