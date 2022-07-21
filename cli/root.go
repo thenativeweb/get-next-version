@@ -3,6 +3,7 @@ package cli
 import (
 	"fmt"
 
+	"github.com/Masterminds/semver"
 	gogit "github.com/go-git/go-git/v5"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
@@ -43,7 +44,11 @@ var RootCommand = &cobra.Command{
 		result, err := git.GetConventionalCommitTypesSinceLastRelease(repository)
 		if err != nil {
 			if err == git.ErrNoCommitsFound {
-				fmt.Println("0.0.1")
+				initialVersion := *semver.MustParse("0.0.1")
+				lines := cliutil.Format(initialVersion, true, rootFormatFlag)
+				for _, line := range lines {
+					fmt.Println(line)
+				}
 				return
 			}
 			log.Fatal().Msg(err.Error())
