@@ -11,8 +11,5 @@ func SetUpInMemoryRepository() *git.Repository {
 	fs := memfs.New()
 
 	repository, _ := git.Init(storer, fs)
-	worktree, _ := repository.Worktree()
-	worktree.Commit("Initial Commit", CreateCommitOptions())
-
 	return repository
 }
