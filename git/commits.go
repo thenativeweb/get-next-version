@@ -6,6 +6,7 @@ import (
 
 	"github.com/Masterminds/semver"
 	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/thenativeweb/get-next-version/conventionalcommits"
 )
 
@@ -23,6 +24,9 @@ func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (Con
 	}
 	head, err := repository.Head()
 	if err != nil {
+		if err == plumbing.ErrReferenceNotFound {
+			return ConventionalCommmitTypesResult{}, ErrNoCommitsFound
+		}
 		return ConventionalCommmitTypesResult{}, err
 	}
 	commitIterator, err := repository.Log(&git.LogOptions{From: head.Hash()})
@@ -30,12 +34,10 @@ func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (Con
 		return ConventionalCommmitTypesResult{}, err
 	}
 
-	foundAtLeastOneCommit := false
 	currentCommit, currentCommitErr := commitIterator.Next()
 	var latestReleaseVersion *semver.Version
 	conventionalCommitTypes := []conventionalcommits.Type{}
 	for currentCommitErr == nil {
-		foundAtLeastOneCommit = true
 		var doesVersionExistForCommit bool
 		latestReleaseVersion, doesVersionExistForCommit = tags[currentCommit.Hash]
 		if doesVersionExistForCommit {
@@ -54,11 +56,11 @@ func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (Con
 	}
 
 	if currentCommitErr != nil {
-		if currentCommitErr == io.EOF && !foundAtLeastOneCommit {
-			return ConventionalCommmitTypesResult{}, ErrNoCommitsFound
+		if currentCommitErr != io.EOF {
+			return ConventionalCommmitTypesResult{}, currentCommitErr
 		}
 
-		return ConventionalCommmitTypesResult{}, currentCommitErr
+		latestReleaseVersion = semver.MustParse("0.0.0")
 	}
 
 	return ConventionalCommmitTypesResult{

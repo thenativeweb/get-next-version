@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/Masterminds/semver"
+	gogit "github.com/go-git/go-git/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/thenativeweb/get-next-version/conventionalcommits"
 	"github.com/thenativeweb/get-next-version/git"
@@ -21,20 +22,33 @@ func TestGetConventionalCommitTypesSinceLatestRelease(t *testing.T) {
 		doExpectError                   bool
 		expectedLastVersion             *semver.Version
 		expectedConventionalCommitTypes []conventionalcommits.Type
+		annotateTags                    bool
 	}{
 		{
 			commitHistory:                   []commit{},
 			doExpectError:                   true,
 			expectedLastVersion:             nil,
 			expectedConventionalCommitTypes: []conventionalcommits.Type{},
+			annotateTags:                    false,
 		},
 		{
 			commitHistory: []commit{
 				{message: "chore: Do something", tag: ""},
 			},
-			doExpectError:                   true,
-			expectedLastVersion:             nil,
-			expectedConventionalCommitTypes: []conventionalcommits.Type{},
+			doExpectError:                   false,
+			expectedLastVersion:             semver.MustParse("0.0.0"),
+			expectedConventionalCommitTypes: []conventionalcommits.Type{conventionalcommits.Chore},
+			annotateTags:                    false,
+		},
+		{
+			commitHistory: []commit{
+				{message: "Last release", tag: "1.0.0"},
+				{message: "Do something", tag: ""},
+			},
+			doExpectError:                   false,
+			expectedLastVersion:             semver.MustParse("1.0.0"),
+			expectedConventionalCommitTypes: []conventionalcommits.Type{conventionalcommits.Chore},
+			annotateTags:                    false,
 		},
 		{
 			commitHistory: []commit{
@@ -43,6 +57,7 @@ func TestGetConventionalCommitTypesSinceLatestRelease(t *testing.T) {
 			doExpectError:                   false,
 			expectedLastVersion:             semver.MustParse("1.0.0"),
 			expectedConventionalCommitTypes: []conventionalcommits.Type{},
+			annotateTags:                    false,
 		},
 		{
 			commitHistory: []commit{
@@ -55,6 +70,7 @@ func TestGetConventionalCommitTypesSinceLatestRelease(t *testing.T) {
 			doExpectError:                   false,
 			expectedLastVersion:             semver.MustParse("1.0.0"),
 			expectedConventionalCommitTypes: []conventionalcommits.Type{conventionalcommits.Chore},
+			annotateTags:                    false,
 		},
 		{
 			commitHistory: []commit{
@@ -76,6 +92,17 @@ func TestGetConventionalCommitTypesSinceLatestRelease(t *testing.T) {
 				conventionalcommits.BreakingChange,
 				conventionalcommits.BreakingChange,
 			},
+			annotateTags: false,
+		},
+		{
+			commitHistory: []commit{
+				{message: "Last release", tag: "1.0.0"},
+				{message: "fix: Do something", tag: ""},
+			},
+			doExpectError:                   false,
+			expectedLastVersion:             semver.MustParse("1.0.0"),
+			expectedConventionalCommitTypes: []conventionalcommits.Type{conventionalcommits.Fix},
+			annotateTags:                    true,
 		},
 	}
 
@@ -84,14 +111,22 @@ func TestGetConventionalCommitTypesSinceLatestRelease(t *testing.T) {
 		worktree, _ := repository.Worktree()
 
 		for _, commit := range test.commitHistory {
-			worktree.Commit(commit.message, testutil.CreateCommitOptions())
+			commitOptions := testutil.CreateCommitOptions()
+			worktree.Commit(commit.message, commitOptions)
 
 			if commit.tag == "" {
 				continue
 			}
 
 			head, _ := repository.Head()
-			repository.CreateTag(commit.tag, head.Hash(), nil)
+			var createTagOpts *gogit.CreateTagOptions
+			if test.annotateTags {
+				createTagOpts = &gogit.CreateTagOptions{
+					Message: "some message",
+					Tagger:  commitOptions.Author,
+				}
+			}
+			repository.CreateTag(commit.tag, head.Hash(), createTagOpts)
 		}
 
 		actual, err := git.GetConventionalCommitTypesSinceLastRelease(repository)
