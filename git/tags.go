@@ -1,22 +1,55 @@
 package git
 
 import (
+	"errors"
+
+	"github.com/Masterminds/semver"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 )
 
-func GetAllTags(repository *git.Repository) ([]*plumbing.Reference, error) {
+type Tags = map[plumbing.Hash]*semver.Version
+
+var ErrMultipleSemVerTagOnSameCommit = errors.New("commit was tagged with multiple semver versions")
+
+func GetAllSemVerTags(repository *git.Repository) (Tags, error) {
 	tagsIterator, err := repository.Tags()
 	if err != nil {
-		return []*plumbing.Reference{}, err
+		return Tags{}, err
 	}
 
-	var tags []*plumbing.Reference
+	var tags = make(Tags)
 
-	tagsIterator.ForEach(func(tag *plumbing.Reference) error {
-		tags = append(tags, tag)
+	err = tagsIterator.ForEach(func(tag *plumbing.Reference) error {
+		var commitHash plumbing.Hash
+		tagObject, err := repository.TagObject(tag.Hash())
+		switch err {
+		case nil:
+			commit, err := tagObject.Commit()
+			if err != nil {
+				return err
+			}
+			commitHash = commit.Hash
+		case plumbing.ErrObjectNotFound:
+			commitHash = tag.Hash()
+		default:
+			return err
+		}
+
+		version, err := semver.NewVersion(tag.Name().Short())
+		if err != nil {
+			return nil
+		}
+
+		if _, exists := tags[commitHash]; exists {
+			return ErrMultipleSemVerTagOnSameCommit
+		}
+		tags[commitHash] = version
 		return nil
 	})
+	if err != nil {
+		return Tags{}, err
+	}
 
 	return tags, nil
 }

@@ -17,7 +17,7 @@ type ConventionalCommmitTypesResult struct {
 var ErrNoCommitsFound = errors.New("no commits found")
 
 func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (ConventionalCommmitTypesResult, error) {
-	tags, err := GetAllTags(repository)
+	tags, err := GetAllSemVerTags(repository)
 	if err != nil {
 		return ConventionalCommmitTypesResult{}, err
 	}
@@ -30,21 +30,15 @@ func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (Con
 		return ConventionalCommmitTypesResult{}, err
 	}
 
+	foundAtLeastOneCommit := false
 	currentCommit, currentCommitErr := commitIterator.Next()
 	var latestReleaseVersion *semver.Version
 	conventionalCommitTypes := []conventionalcommits.Type{}
 	for currentCommitErr == nil {
-		wasPartOfLastRelease := false
-		for _, tag := range tags {
-			if tag.Hash() == currentCommit.Hash {
-				latestReleaseVersion, err = semver.NewVersion(tag.Name().Short())
-				if err == nil {
-					wasPartOfLastRelease = true
-					break
-				}
-			}
-		}
-		if wasPartOfLastRelease {
+		foundAtLeastOneCommit = true
+		var doesVersionExistForCommit bool
+		latestReleaseVersion, doesVersionExistForCommit = tags[currentCommit.Hash]
+		if doesVersionExistForCommit {
 			break
 		}
 
@@ -60,7 +54,7 @@ func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (Con
 	}
 
 	if currentCommitErr != nil {
-		if currentCommitErr == io.EOF && currentCommit == nil {
+		if currentCommitErr == io.EOF && !foundAtLeastOneCommit {
 			return ConventionalCommmitTypesResult{}, ErrNoCommitsFound
 		}
 

@@ -48,8 +48,9 @@ var RootCommand = &cobra.Command{
 			if err == git.ErrNoCommitsFound {
 				nextVersion = *semver.MustParse("0.0.1")
 				hasNextVersion = true
+			} else {
+				log.Fatal().Msg(err.Error())
 			}
-			log.Fatal().Msg(err.Error())
 		} else {
 			nextVersion, hasNextVersion = versioning.CalculateNextVersion(result.LatestReleaseVersion, result.ConventionalCommitTypes)
 		}
