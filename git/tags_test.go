@@ -10,22 +10,36 @@ import (
 	"github.com/thenativeweb/get-next-version/testutil"
 )
 
-func TestGetAllTags(t *testing.T) {
+func TestGetAllSemVerTags(t *testing.T) {
 	tests := []struct {
-		tagsPerBranch    map[string][]string
+		tagsPerBranch    map[string][][]string
+		doesExpectError  bool
 		expectedTagNames []string
 	}{
 		{
-			tagsPerBranch:    map[string][]string{"main": {"1.0.0"}},
+			tagsPerBranch:    map[string][][]string{"main": {{"1.0.0"}}},
+			doesExpectError:  false,
 			expectedTagNames: []string{"1.0.0"},
 		},
 		{
-			tagsPerBranch:    map[string][]string{"main": {"1.0.0", "2.0.0"}},
+			tagsPerBranch:    map[string][][]string{"main": {{"1.0.0"}, {"2.0.0"}}},
+			doesExpectError:  false,
 			expectedTagNames: []string{"1.0.0", "2.0.0"},
 		},
 		{
-			tagsPerBranch:    map[string][]string{"main": {"1.0.0", "2.0.0"}, "feature": {"feature-tag"}},
-			expectedTagNames: []string{"1.0.0", "2.0.0", "feature-tag"},
+			tagsPerBranch:    map[string][][]string{"main": {{"1.0.0"}, {"2.0.0"}}, "feature": {{"3.0.0"}}},
+			doesExpectError:  false,
+			expectedTagNames: []string{"1.0.0", "2.0.0", "3.0.0"},
+		},
+		{
+			tagsPerBranch:    map[string][][]string{"main": {{"1.0.0"}, {"2.0.0"}, {"feature-tag"}}},
+			doesExpectError:  false,
+			expectedTagNames: []string{"1.0.0", "2.0.0"},
+		},
+		{
+			tagsPerBranch:    map[string][][]string{"main": {{"1.0.0", "2.0.0"}}},
+			doesExpectError:  true,
+			expectedTagNames: []string{},
 		},
 	}
 
@@ -39,18 +53,26 @@ func TestGetAllTags(t *testing.T) {
 				Branch: plumbing.ReferenceName(branchName),
 			})
 
-			head, _ := repository.Head()
-			for _, tagName := range tagNames {
-				repository.CreateTag(tagName, head.Hash(), nil)
+			for _, tagNamesForCommit := range tagNames {
+				worktree.Commit("some message", testutil.CreateCommitOptions())
+				head, _ := repository.Head()
+				for _, tagName := range tagNamesForCommit {
+					repository.CreateTag(tagName, head.Hash(), nil)
+				}
 			}
 		}
 
-		tags, err := git.GetAllTags(repository)
+		tags, err := git.GetAllSemVerTags(repository)
+
+		if test.doesExpectError {
+			assert.Error(t, err)
+			continue
+		}
 
 		assert.NoError(t, err)
 		var tagNames []string
 		for _, tag := range tags {
-			tagNames = append(tagNames, tag.Name().Short())
+			tagNames = append(tagNames, tag.String())
 		}
 		assert.ElementsMatch(t, test.expectedTagNames, tagNames)
 	}
