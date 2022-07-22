@@ -76,5 +76,4 @@ func TestGetAllSemVerTags(t *testing.T) {
 		}
 		assert.ElementsMatch(t, test.expectedTagNames, tagNames)
 	}
-
 }
