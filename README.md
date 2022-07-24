@@ -10,7 +10,7 @@ Then, run the following steps:
 
 ```shell
 # Download the latest release (insert the url here)
-$ curl -o get-next-version <URL>
+$ curl -L -o get-next-version <URL>
 
 # Ensure the binary is executable
 $ chmod a+x get-next-version
