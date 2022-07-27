@@ -2,6 +2,7 @@ package git
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/Masterminds/semver"
 	"github.com/go-git/go-git/v5"
@@ -9,8 +10,6 @@ import (
 )
 
 type Tags = map[plumbing.Hash]*semver.Version
-
-var ErrMultipleSemVerTagOnSameCommit = errors.New("commit was tagged with multiple semver versions")
 
 func GetAllSemVerTags(repository *git.Repository) (Tags, error) {
 	tagsIterator, err := repository.Tags()
@@ -42,7 +41,7 @@ func GetAllSemVerTags(repository *git.Repository) (Tags, error) {
 		}
 
 		if _, exists := tags[commitHash]; exists {
-			return ErrMultipleSemVerTagOnSameCommit
+			return errors.New(fmt.Sprintf("commit %s was tagged with multiple semver versions", commitHash.String()))
 		}
 		tags[commitHash] = version
 		return nil
