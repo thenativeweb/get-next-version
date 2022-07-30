@@ -61,10 +61,23 @@ func TestGetConventionalCommitTypesSinceLatestRelease(t *testing.T) {
 		},
 		{
 			commitHistory: []commit{
-				{message: "chore: irelevant", tag: "0.0.1"},
+				{message: "chore: irrelevant", tag: "0.0.1"},
 				{message: "feat: because it is", tag: ""},
 				{message: "feat(scope)!: before the last tag", tag: "0.0.2"},
 				{message: "chore: Do something", tag: "1.0.0"},
+				{message: "chore: Do something else", tag: ""},
+			},
+			doExpectError:                   false,
+			expectedLastVersion:             semver.MustParse("1.0.0"),
+			expectedConventionalCommitTypes: []conventionalcommits.Type{conventionalcommits.Chore},
+			annotateTags:                    false,
+		},
+		{
+			commitHistory: []commit{
+				{message: "chore: irrelevant", tag: "v0.0.1"},
+				{message: "feat: because it is", tag: ""},
+				{message: "feat(scope)!: before the last tag", tag: "0.0.2"},
+				{message: "chore: Do something", tag: "v1.0.0"},
 				{message: "chore: Do something else", tag: ""},
 			},
 			doExpectError:                   false,
@@ -137,8 +150,13 @@ func TestGetConventionalCommitTypesSinceLatestRelease(t *testing.T) {
 		}
 
 		assert.NoError(t, err)
-		assert.Equal(t, test.expectedLastVersion, actual.LatestReleaseVersion)
+
+		// We need to compare using semver's own Equal function, because under
+		// the hood it makes a difference between versions with a leading v and
+		// versions without a leading v. However, when printing them, they are
+		// actually both shown without the v.
+		assert.True(t, test.expectedLastVersion.Equal(actual.LatestReleaseVersion))
+		assert.Equal(t, test.expectedLastVersion.String(), actual.LatestReleaseVersion.String())
 		assert.ElementsMatch(t, test.expectedConventionalCommitTypes, actual.ConventionalCommitTypes)
 	}
-
 }
