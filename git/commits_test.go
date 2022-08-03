@@ -151,12 +151,11 @@ func TestGetConventionalCommitTypesSinceLatestRelease(t *testing.T) {
 
 		assert.NoError(t, err)
 
-		// We need to compare using semver's own Equal function, because under
-		// the hood it makes a difference between versions with a leading v and
-		// versions without a leading v. However, when printing them, they are
-		// actually both shown without the v.
+		// The test in the next line is not optimal. We rely on the Equal
+		// function of the SemVer module here, which considers v1.0.0 and
+		// 1.0.0 to be the same. In contrast to this, assert.Equal fails
+		// when comparing these two versions, due to the leading v.
 		assert.True(t, test.expectedLastVersion.Equal(actual.LatestReleaseVersion))
-		assert.Equal(t, test.expectedLastVersion.String(), actual.LatestReleaseVersion.String())
 		assert.ElementsMatch(t, test.expectedConventionalCommitTypes, actual.ConventionalCommitTypes)
 	}
 }
