@@ -61,10 +61,23 @@ func TestGetConventionalCommitTypesSinceLatestRelease(t *testing.T) {
 		},
 		{
 			commitHistory: []commit{
-				{message: "chore: irelevant", tag: "0.0.1"},
+				{message: "chore: irrelevant", tag: "0.0.1"},
 				{message: "feat: because it is", tag: ""},
 				{message: "feat(scope)!: before the last tag", tag: "0.0.2"},
 				{message: "chore: Do something", tag: "1.0.0"},
+				{message: "chore: Do something else", tag: ""},
+			},
+			doExpectError:                   false,
+			expectedLastVersion:             semver.MustParse("1.0.0"),
+			expectedConventionalCommitTypes: []conventionalcommits.Type{conventionalcommits.Chore},
+			annotateTags:                    false,
+		},
+		{
+			commitHistory: []commit{
+				{message: "chore: irrelevant", tag: "v0.0.1"},
+				{message: "feat: because it is", tag: ""},
+				{message: "feat(scope)!: before the last tag", tag: "0.0.2"},
+				{message: "chore: Do something", tag: "v1.0.0"},
 				{message: "chore: Do something else", tag: ""},
 			},
 			doExpectError:                   false,
@@ -137,8 +150,12 @@ func TestGetConventionalCommitTypesSinceLatestRelease(t *testing.T) {
 		}
 
 		assert.NoError(t, err)
-		assert.Equal(t, test.expectedLastVersion, actual.LatestReleaseVersion)
+
+		// The test in the next line is not optimal. We rely on the Equal
+		// function of the SemVer module here, which considers v1.0.0 and
+		// 1.0.0 to be the same. In contrast to this, assert.Equal fails
+		// when comparing these two versions, due to the leading v.
+		assert.True(t, test.expectedLastVersion.Equal(actual.LatestReleaseVersion))
 		assert.ElementsMatch(t, test.expectedConventionalCommitTypes, actual.ConventionalCommitTypes)
 	}
-
 }
