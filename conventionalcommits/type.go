@@ -14,7 +14,7 @@ const (
 	BreakingChange
 )
 
-var choreTypes = []string{"build", "chore", "ci", "docs", "style", "refector", "perf", "test"}
+var choreTypes = []string{"build", "chore", "ci", "docs", "style", "refactor", "perf", "test"}
 var fixTypes = []string{"fix"}
 var featureTypes = []string{"feat"}
 var allTypes []string
