@@ -10,41 +10,44 @@ import (
 
 func TestFormat(t *testing.T) {
 	version, err := semver.NewVersion("1.2.3")
+	changelog := []string{"chore: not relevant", "feat: add basic authentication", "feat!: enforce authentication", "fix: fix redirect"}
 	assert.NoError(t, err)
 
-	output := cliutil.Format(*version, true, "github-action")
+	output := cliutil.Format(*version, true, changelog, "github-action")
 	assert.Equal(t, []string{
 		"::set-output name=version::1.2.3",
 		"::set-output name=hasNextVersion::true",
+		"::set-output name=changelog::[\"chore: not relevant\",\"feat: add basic authentication\",\"feat!: enforce authentication\",\"fix: fix redirect\"]",
 	}, output)
 
-	output = cliutil.Format(*version, false, "github-action")
+	output = cliutil.Format(*version, false, changelog, "github-action")
 	assert.Equal(t, []string{
 		"::set-output name=version::1.2.3",
 		"::set-output name=hasNextVersion::false",
+		"::set-output name=changelog::[\"chore: not relevant\",\"feat: add basic authentication\",\"feat!: enforce authentication\",\"fix: fix redirect\"]",
 	}, output)
 
-	output = cliutil.Format(*version, true, "json")
+	output = cliutil.Format(*version, true, changelog, "json")
 	assert.Equal(t, []string{
-		`{"version": "1.2.3", "hasNextVersion": true}`,
+		`{"version": "1.2.3", "hasNextVersion": true, "changelog": ["chore: not relevant","feat: add basic authentication","feat!: enforce authentication","fix: fix redirect"]}`,
 	}, output)
 
-	output = cliutil.Format(*version, false, "json")
+	output = cliutil.Format(*version, false, changelog, "json")
 	assert.Equal(t, []string{
-		`{"version": "1.2.3", "hasNextVersion": false}`,
+		`{"version": "1.2.3", "hasNextVersion": false, "changelog": ["chore: not relevant","feat: add basic authentication","feat!: enforce authentication","fix: fix redirect"]}`,
 	}, output)
 
-	output = cliutil.Format(*version, true, "version")
+	output = cliutil.Format(*version, true, changelog, "version")
 	assert.Equal(t, []string{
 		"1.2.3",
 	}, output)
 
-	output = cliutil.Format(*version, false, "version")
+	output = cliutil.Format(*version, false, changelog, "version")
 	assert.Equal(t, []string{
 		"1.2.3",
 	}, output)
 
 	assert.Panics(t, func() {
-		cliutil.Format(*version, true, "non-existent-format")
+		cliutil.Format(*version, true, changelog, "non-existent-format")
 	})
 }

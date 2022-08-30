@@ -18,46 +18,50 @@ type commit struct {
 
 func TestGetConventionalCommitTypesSinceLatestRelease(t *testing.T) {
 	tests := []struct {
-		commitHistory                   []commit
-		doExpectError                   bool
-		expectedLastVersion             *semver.Version
-		expectedConventionalCommitTypes []conventionalcommits.Type
-		annotateTags                    bool
+		commitHistory               []commit
+		doExpectError               bool
+		expectedLastVersion         *semver.Version
+		expectedConventionalCommits []git.ConventionalCommit
+		annotateTags                bool
 	}{
 		{
-			commitHistory:                   []commit{},
-			doExpectError:                   true,
-			expectedLastVersion:             nil,
-			expectedConventionalCommitTypes: []conventionalcommits.Type{},
-			annotateTags:                    false,
+			commitHistory:               []commit{},
+			doExpectError:               true,
+			expectedLastVersion:         nil,
+			expectedConventionalCommits: []git.ConventionalCommit{},
+			annotateTags:                false,
 		},
 		{
 			commitHistory: []commit{
 				{message: "chore: Do something", tag: ""},
 			},
-			doExpectError:                   false,
-			expectedLastVersion:             semver.MustParse("0.0.0"),
-			expectedConventionalCommitTypes: []conventionalcommits.Type{conventionalcommits.Chore},
-			annotateTags:                    false,
+			doExpectError:       false,
+			expectedLastVersion: semver.MustParse("0.0.0"),
+			expectedConventionalCommits: []git.ConventionalCommit{
+				{conventionalcommits.Chore, "chore: Do something"},
+			},
+			annotateTags: false,
 		},
 		{
 			commitHistory: []commit{
 				{message: "Last release", tag: "1.0.0"},
 				{message: "Do something", tag: ""},
 			},
-			doExpectError:                   false,
-			expectedLastVersion:             semver.MustParse("1.0.0"),
-			expectedConventionalCommitTypes: []conventionalcommits.Type{conventionalcommits.Chore},
-			annotateTags:                    false,
+			doExpectError:       false,
+			expectedLastVersion: semver.MustParse("1.0.0"),
+			expectedConventionalCommits: []git.ConventionalCommit{
+				{conventionalcommits.Chore, "Do something"},
+			},
+			annotateTags: false,
 		},
 		{
 			commitHistory: []commit{
 				{message: "chore: Do something", tag: "1.0.0"},
 			},
-			doExpectError:                   false,
-			expectedLastVersion:             semver.MustParse("1.0.0"),
-			expectedConventionalCommitTypes: []conventionalcommits.Type{},
-			annotateTags:                    false,
+			doExpectError:               false,
+			expectedLastVersion:         semver.MustParse("1.0.0"),
+			expectedConventionalCommits: []git.ConventionalCommit{},
+			annotateTags:                false,
 		},
 		{
 			commitHistory: []commit{
@@ -67,10 +71,12 @@ func TestGetConventionalCommitTypesSinceLatestRelease(t *testing.T) {
 				{message: "chore: Do something", tag: "1.0.0"},
 				{message: "chore: Do something else", tag: ""},
 			},
-			doExpectError:                   false,
-			expectedLastVersion:             semver.MustParse("1.0.0"),
-			expectedConventionalCommitTypes: []conventionalcommits.Type{conventionalcommits.Chore},
-			annotateTags:                    false,
+			doExpectError:       false,
+			expectedLastVersion: semver.MustParse("1.0.0"),
+			expectedConventionalCommits: []git.ConventionalCommit{
+				{conventionalcommits.Chore, "chore: Do something else"},
+			},
+			annotateTags: false,
 		},
 		{
 			commitHistory: []commit{
@@ -80,10 +86,12 @@ func TestGetConventionalCommitTypesSinceLatestRelease(t *testing.T) {
 				{message: "chore: Do something", tag: "v1.0.0"},
 				{message: "chore: Do something else", tag: ""},
 			},
-			doExpectError:                   false,
-			expectedLastVersion:             semver.MustParse("1.0.0"),
-			expectedConventionalCommitTypes: []conventionalcommits.Type{conventionalcommits.Chore},
-			annotateTags:                    false,
+			doExpectError:       false,
+			expectedLastVersion: semver.MustParse("1.0.0"),
+			expectedConventionalCommits: []git.ConventionalCommit{
+				{conventionalcommits.Chore, "chore: Do something else"},
+			},
+			annotateTags: false,
 		},
 		{
 			commitHistory: []commit{
@@ -97,13 +105,13 @@ func TestGetConventionalCommitTypesSinceLatestRelease(t *testing.T) {
 			},
 			doExpectError:       false,
 			expectedLastVersion: semver.MustParse("1.0.0"),
-			expectedConventionalCommitTypes: []conventionalcommits.Type{
-				conventionalcommits.Chore,
-				conventionalcommits.Fix,
-				conventionalcommits.Feature,
-				conventionalcommits.BreakingChange,
-				conventionalcommits.BreakingChange,
-				conventionalcommits.BreakingChange,
+			expectedConventionalCommits: []git.ConventionalCommit{
+				{conventionalcommits.Chore, "chore: non breaking"},
+				{conventionalcommits.Fix, "fix: non breaking"},
+				{conventionalcommits.Feature, "feat: non breaking"},
+				{conventionalcommits.BreakingChange, "chore!: breaking"},
+				{conventionalcommits.BreakingChange, "fix(with scope)!: breaking"},
+				{conventionalcommits.BreakingChange, "feat: breaking\n\nBREAKING-CHANGE: with footer"},
 			},
 			annotateTags: false,
 		},
@@ -112,10 +120,12 @@ func TestGetConventionalCommitTypesSinceLatestRelease(t *testing.T) {
 				{message: "Last release", tag: "1.0.0"},
 				{message: "fix: Do something", tag: ""},
 			},
-			doExpectError:                   false,
-			expectedLastVersion:             semver.MustParse("1.0.0"),
-			expectedConventionalCommitTypes: []conventionalcommits.Type{conventionalcommits.Fix},
-			annotateTags:                    true,
+			doExpectError:       false,
+			expectedLastVersion: semver.MustParse("1.0.0"),
+			expectedConventionalCommits: []git.ConventionalCommit{
+				{conventionalcommits.Fix, "fix: Do something"},
+			},
+			annotateTags: true,
 		},
 	}
 
@@ -142,7 +152,7 @@ func TestGetConventionalCommitTypesSinceLatestRelease(t *testing.T) {
 			repository.CreateTag(commit.tag, head.Hash(), createTagOpts)
 		}
 
-		actual, err := git.GetConventionalCommitTypesSinceLastRelease(repository)
+		actual, err := git.GetConventionalCommitsSinceLastRelease(repository)
 
 		if test.doExpectError {
 			assert.Error(t, err)
@@ -156,6 +166,6 @@ func TestGetConventionalCommitTypesSinceLatestRelease(t *testing.T) {
 		// 1.0.0 to be the same. In contrast to this, assert.Equal fails
 		// when comparing these two versions, due to the leading v.
 		assert.True(t, test.expectedLastVersion.Equal(actual.LatestReleaseVersion))
-		assert.ElementsMatch(t, test.expectedConventionalCommitTypes, actual.ConventionalCommitTypes)
+		assert.ElementsMatch(t, test.expectedConventionalCommits, actual.ConventionalCommits)
 	}
 }

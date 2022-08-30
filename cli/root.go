@@ -43,14 +43,16 @@ var RootCommand = &cobra.Command{
 
 		var nextVersion semver.Version
 		var hasNextVersion bool
-		result, err := git.GetConventionalCommitTypesSinceLastRelease(repository)
+		var changelog []string
+		result, err := git.GetConventionalCommitsSinceLastRelease(repository)
 		if err != nil {
 			log.Fatal().Msg(err.Error())
 		} else {
-			nextVersion, hasNextVersion = versioning.CalculateNextVersion(result.LatestReleaseVersion, result.ConventionalCommitTypes)
+			nextVersion, hasNextVersion = versioning.CalculateNextVersion(result.LatestReleaseVersion, result.ConventionalCommits)
+			changelog = cliutil.ExtractChangelog(result.ConventionalCommits)
 		}
 
-		lines := cliutil.Format(nextVersion, hasNextVersion, rootFormatFlag)
+		lines := cliutil.Format(nextVersion, hasNextVersion, changelog, rootFormatFlag)
 		for _, line := range lines {
 			fmt.Println(line)
 		}

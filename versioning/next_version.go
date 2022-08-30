@@ -3,16 +3,17 @@ package versioning
 import (
 	"github.com/Masterminds/semver"
 	"github.com/thenativeweb/get-next-version/conventionalcommits"
+	"github.com/thenativeweb/get-next-version/git"
 )
 
 func CalculateNextVersion(
 	currentVersion *semver.Version,
-	conventionalCommitTypes []conventionalcommits.Type,
+	conventionalCommits []git.ConventionalCommit,
 ) (semver.Version, bool) {
 	currentlyDetectedChange := conventionalcommits.Chore
-	for _, commitType := range conventionalCommitTypes {
-		if commitType > currentlyDetectedChange {
-			currentlyDetectedChange = commitType
+	for _, commit := range conventionalCommits {
+		if commit.Type > currentlyDetectedChange {
+			currentlyDetectedChange = commit.Type
 		}
 		if currentlyDetectedChange == conventionalcommits.BreakingChange {
 			break

@@ -10,33 +10,38 @@ import (
 	"github.com/thenativeweb/get-next-version/conventionalcommits"
 )
 
-type ConventionalCommmitTypesResult struct {
-	LatestReleaseVersion    *semver.Version
-	ConventionalCommitTypes []conventionalcommits.Type
+type ConventionalCommit struct {
+	Type    conventionalcommits.Type
+	Message string
+}
+
+type ConventionalCommmitsResult struct {
+	LatestReleaseVersion *semver.Version
+	ConventionalCommits  []ConventionalCommit
 }
 
 var ErrNoCommitsFound = errors.New("no commits found")
 
-func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (ConventionalCommmitTypesResult, error) {
+func GetConventionalCommitsSinceLastRelease(repository *git.Repository) (ConventionalCommmitsResult, error) {
 	tags, err := GetAllSemVerTags(repository)
 	if err != nil {
-		return ConventionalCommmitTypesResult{}, err
+		return ConventionalCommmitsResult{}, err
 	}
 	head, err := repository.Head()
 	if err != nil {
 		if err == plumbing.ErrReferenceNotFound {
-			return ConventionalCommmitTypesResult{}, ErrNoCommitsFound
+			return ConventionalCommmitsResult{}, ErrNoCommitsFound
 		}
-		return ConventionalCommmitTypesResult{}, err
+		return ConventionalCommmitsResult{}, err
 	}
 	commitIterator, err := repository.Log(&git.LogOptions{From: head.Hash()})
 	if err != nil {
-		return ConventionalCommmitTypesResult{}, err
+		return ConventionalCommmitsResult{}, err
 	}
 
 	currentCommit, currentCommitErr := commitIterator.Next()
 	var latestReleaseVersion *semver.Version
-	conventionalCommitTypes := []conventionalcommits.Type{}
+	conventionalCommits := []ConventionalCommit{}
 	for currentCommitErr == nil {
 		var doesVersionExistForCommit bool
 		latestReleaseVersion, doesVersionExistForCommit = tags[currentCommit.Hash]
@@ -48,23 +53,26 @@ func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (Con
 		if err != nil {
 			currentCommitType = conventionalcommits.Chore
 		}
-		conventionalCommitTypes = append(
-			conventionalCommitTypes,
-			currentCommitType,
+		conventionalCommits = append(
+			conventionalCommits,
+			ConventionalCommit{
+				currentCommitType,
+				currentCommit.Message,
+			},
 		)
 		currentCommit, currentCommitErr = commitIterator.Next()
 	}
 
 	if currentCommitErr != nil {
 		if currentCommitErr != io.EOF {
-			return ConventionalCommmitTypesResult{}, currentCommitErr
+			return ConventionalCommmitsResult{}, currentCommitErr
 		}
 
 		latestReleaseVersion = semver.MustParse("0.0.0")
 	}
 
-	return ConventionalCommmitTypesResult{
-		LatestReleaseVersion:    latestReleaseVersion,
-		ConventionalCommitTypes: conventionalCommitTypes,
+	return ConventionalCommmitsResult{
+		LatestReleaseVersion: latestReleaseVersion,
+		ConventionalCommits:  conventionalCommits,
 	}, nil
 }
