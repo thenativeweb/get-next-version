@@ -8,5 +8,11 @@ outputs:
   hasNextVersion:
     description: 'Whether there is a next version'
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
+  using: 'composite'
+  steps:
+    - name: "Next Version"
+      shell: sh
+      uses: docker://thenativeweb/get-next-version
+      with:
+          entrypoint: /action/entrypoint.sh
+  

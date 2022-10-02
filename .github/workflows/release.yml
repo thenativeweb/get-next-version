@@ -59,6 +59,8 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: forestsoft/get-next-version:${{needs.qa.outputs.version}}
+          tags: |
+            thenativeweb/get-next-version:${{needs.qa.outputs.version}}
+            thenativeweb/get-next-version:latest
 
    
