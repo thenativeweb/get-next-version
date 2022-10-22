@@ -66,6 +66,7 @@ jobs:
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
+        ref: ${{ github.event.pull_request.head.sha }}
     - name: Get next version
       id: get_next_version
       uses: thenativeweb/get-next-version
