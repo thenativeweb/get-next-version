@@ -69,7 +69,7 @@ jobs:
         ref: ${{ github.event.pull_request.head.sha }}
     - name: Get next version
       id: get_next_version
-      uses: thenativeweb/get-next-version
+      uses: thenativeweb/get-next-version@main
     - name: Show the next version
       run: |
         echo ${{ steps.get_next_version.outputs.version }}
