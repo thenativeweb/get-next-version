@@ -22,6 +22,18 @@ jobs:
     - name: Get next version
       id: get_next_version
       uses: ./
+
+    - name: Set new image version in action.yml
+      if: ${{ steps.get_next_version.outputs.hasNextVersion == 'true' }}
+      run: |
+        sed -i "s/<version>/${{ steps.get_next_version.outputs.version }}/" ./action.yml
+    - name: Create release commit
+      if: ${{ steps.get_next_version.outputs.hasNextVersion == 'true' }}
+      uses: EndBug/add-and-commit@v7
+      with:
+        add: ./action.yml
+        message: "chore(release): Version ${{ steps.get_next_version.outputs.version }} [skip ci]"
+        default_author: github_actions
     - name: Create new version
       if: ${{ steps.get_next_version.outputs.hasNextVersion == 'true' }}
       run: |
@@ -39,3 +51,19 @@ jobs:
       with:
         artifacts: "build/*"
         tag: ${{ steps.get_next_version.outputs.version }}
+
+    - name: Set up QEMU
+      if: ${{ steps.get_next_version.outputs.hasNextVersion == 'true' }}
+      uses: docker/setup-qemu-action@v2
+    - name: Set up Docker Buildx
+      if: ${{ steps.get_next_version.outputs.hasNextVersion == 'true' }}
+      uses: docker/setup-buildx-action@v2
+    - name: Build and push docker image
+      if: ${{ steps.get_next_version.outputs.hasNextVersion == 'true' }}
+      uses: docker/build-push-action@v3
+      with:
+        platforms: linux/amd64,linux/arm64
+        push: true
+        tags: ghcr.io/thenativeweb/get-next-version:latest,ghcr.io/thenativeweb/get-next-version:${{steps.get_next_version.outputs.version}}
+        build-args: >
+          githubTokenAdmin=${{ secrets.GH_TOKEN_ADMIN }}
