@@ -26,7 +26,7 @@ jobs:
     - name: Set new image version in action.yml
       if: ${{ steps.get_next_version.outputs.hasNextVersion == 'true' }}
       run: |
-        sed -i "s/<version>/${{ steps.get_next_version.outputs.version }}/" ./action.yml
+        cat ./action.yml.tpl | sed "s/<version>/${{ steps.get_next_version.outputs.version }}/" > ./action.yml
     - name: Create release commit
       if: ${{ steps.get_next_version.outputs.hasNextVersion == 'true' }}
       uses: EndBug/add-and-commit@v7
