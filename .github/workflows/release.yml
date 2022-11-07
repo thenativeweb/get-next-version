@@ -5,6 +5,9 @@ on:
     branches:
       - 'main'
 
+env:
+  GH_TOKEN: ${{ secrets.GH_TOKEN_ADMIN }}
+
 jobs:
   qa:
     name: Release
@@ -14,7 +17,8 @@ jobs:
     - name: Clone repository
       uses: actions/checkout@v3
       with:
-        fetch-depth: 0
+        fetch-depth: '0'
+        token: ${{ env.GH_TOKEN }}
     - name: Use Go
       uses: actions/setup-go@v3
       with:
