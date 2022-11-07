@@ -19,6 +19,12 @@ jobs:
       with:
         fetch-depth: '0'
         token: ${{ env.GH_TOKEN }}
+    - name: Login to GitHub container registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: goloroden
+        password: ${{ secrets.GHCR_ACCESS_TOKEN_ADMIN }}
     - name: Use Go
       uses: actions/setup-go@v3
       with:
