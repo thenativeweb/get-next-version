@@ -29,6 +29,9 @@ jobs:
       uses: actions/setup-go@v3
       with:
         go-version: '1.18'
+    - name: Configure action to use Dockerfile for local execution
+      run: |
+        cat ./action.yml.tpl | sed "s/<docker-image>/Dockerfile/" > ./action.yml
     - name: Get next version
       id: get_next_version
       uses: ./
@@ -36,7 +39,7 @@ jobs:
     - name: Set new image version in action.yml
       if: ${{ steps.get_next_version.outputs.hasNextVersion == 'true' }}
       run: |
-        cat ./action.yml.tpl | sed "s/<version>/${{ steps.get_next_version.outputs.version }}/" > ./action.yml
+        cat ./action.yml.tpl | sed "s/<docker-image>/ghcr.io\/thenativeweb\/get-next-version:${{ steps.get_next_version.outputs.version }}/" > ./action.yml
     - name: Create release commit
       if: ${{ steps.get_next_version.outputs.hasNextVersion == 'true' }}
       uses: EndBug/add-and-commit@v9
