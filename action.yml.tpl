@@ -9,4 +9,4 @@ outputs:
     description: 'Whether there is a next version'
 runs:
   using: 'docker'
-  image: 'ghcr.io/thenativeweb/get-next-version:<version>'
+  image: '<docker-image>'
