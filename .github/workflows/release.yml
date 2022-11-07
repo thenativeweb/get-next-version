@@ -29,7 +29,7 @@ jobs:
         cat ./action.yml.tpl | sed "s/<version>/${{ steps.get_next_version.outputs.version }}/" > ./action.yml
     - name: Create release commit
       if: ${{ steps.get_next_version.outputs.hasNextVersion == 'true' }}
-      uses: EndBug/add-and-commit@v7
+      uses: EndBug/add-and-commit@v9
       with:
         add: ./action.yml
         message: "chore(release): Version ${{ steps.get_next_version.outputs.version }} [skip ci]"
