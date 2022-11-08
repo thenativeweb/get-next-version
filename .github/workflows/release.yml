@@ -78,5 +78,3 @@ jobs:
         platforms: linux/amd64,linux/arm64
         push: true
         tags: ghcr.io/thenativeweb/get-next-version:latest,ghcr.io/thenativeweb/get-next-version:${{steps.get_next_version.outputs.version}}
-        build-args: >
-          githubToken=${{ secrets.GITHUB_TOKEN }}
