@@ -6,10 +6,7 @@ updates:
     interval: weekly
   open-pull-requests-limit: 10
   assignees:
-  - dotKuro
-  - goloroden
-  - strangedev
-  - yeldiRium
+  - thenativeweb/internal_get-next-version_dep
   labels:
   - Dependencies
   allow:
@@ -22,3 +19,10 @@ updates:
   directory: "/"
   schedule:
     interval: "weekly"
+  open-pull-requests-limit: 10
+  assignees:
+  - thenativeweb/internal_get-next-version_dep
+  labels:
+  - Dependencies
+  commit-message:
+    prefix: chore
