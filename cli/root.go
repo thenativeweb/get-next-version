@@ -15,12 +15,12 @@ import (
 
 var rootRepositoryFlag string
 var rootFormatFlag string
-var rootVersionPrefixFlag string
+var rootPrefixFlag string
 
 func init() {
 	RootCommand.Flags().StringVarP(&rootRepositoryFlag, "repository", "r", ".", "sets the path to the repository")
 	RootCommand.Flags().StringVarP(&rootFormatFlag, "format", "f", "version", "sets the output format")
-	RootCommand.Flags().StringVarP(&rootVersionPrefixFlag, "version-prefix", "p", "", "sets the version prefix")
+	RootCommand.Flags().StringVarP(&rootPrefixFlag, "prefix", "p", "", "sets the version prefix")
 }
 
 var RootCommand = &cobra.Command{
@@ -52,7 +52,7 @@ var RootCommand = &cobra.Command{
 			nextVersion, hasNextVersion = versioning.CalculateNextVersion(result.LatestReleaseVersion, result.ConventionalCommitTypes)
 		}
 
-		lines := cliutil.Format(nextVersion, hasNextVersion, rootFormatFlag, rootVersionPrefixFlag)
+		lines := cliutil.Format(nextVersion, hasNextVersion, rootFormatFlag, rootPrefixFlag)
 		for _, line := range lines {
 			fmt.Println(line)
 		}
