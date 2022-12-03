@@ -33,6 +33,8 @@ Optionally, you may hand over the `--repository` (or short `-r`) flag to specify
 $ get-next-version --repository <PATH>
 ```
 
+If you need to prefix the version, you can use the `--prefix` (or short `-p`) flag.
+
 By default, output will be shown in a human-readable format. If you want to show the output in a machine-readable format, you can use the `--format` (or short `-f`) flag:
 
 ```shell
