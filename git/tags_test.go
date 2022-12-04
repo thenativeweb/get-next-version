@@ -89,15 +89,26 @@ func TestGetAllSemVerTags(t *testing.T) {
 }
 
 func TestIsValidTagName(t *testing.T) {
-	assert.False(t, git.IsValidTagName("/1.2.3"))
-	assert.False(t, git.IsValidTagName("1..2.3"))
-	assert.False(t, git.IsValidTagName("1.2.3."))
-	assert.False(t, git.IsValidTagName("1.2.3/"))
-	assert.False(t, git.IsValidTagName("1.2//.3"))
-	assert.False(t, git.IsValidTagName("?1.2.3"))
-	assert.True(t, git.IsValidTagName("1.2.3"))
-	assert.True(t, git.IsValidTagName("1.2/.3"))
-	assert.True(t, git.IsValidTagName("v1.2.3"))
+	for _, tt := range []struct {
+		name     string
+		tagName  string
+		expected bool
+	}{
+		{name: "valid tag name without prefix", tagName: "1.2.3", expected: true},
+		{name: "valid tag name with prefix", tagName: "v1.2.3", expected: true},
+		{name: "tag name starting with dot", tagName: ".1.2.3", expected: true},
+		{name: "tag name containing double slashes", tagName: "1./2/.3", expected: true},
+		{name: "tag name with duplicated dots", tagName: "1..2.3", expected: false},
+		{name: "tag name ending with dot", tagName: "1.2.3.", expected: false},
+		{name: "tag name starting with slash", tagName: "/1.2.3", expected: false},
+		{name: "tag name ending with slash", tagName: "1.2.3/", expected: false},
+		{name: "tag name containing double consecutive slashes", tagName: "1.//2.3", expected: false},
+		{name: "tag name containing question mark", tagName: "1.2.?3", expected: false},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.expected, git.IsValidTagName(tt.tagName))
+		})
+	}
 }
 
 func BenchmarkIsValidTagName(b *testing.B) {
