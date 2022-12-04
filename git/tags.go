@@ -63,15 +63,15 @@ IsValidTagName runs a series of regex checks to ensure that the tag name is vali
   Tags are not case-sensitive.
 */
 func IsValidTagName(tag string) bool {
-	var mustNotContainBlacklistedChars = regexp.MustCompile(`\?|\\|\~|\^|\:|\*|\[|\@|\s`)
 	var mustNotEndWithDot = regexp.MustCompile(`\.$`)
-	var mustNotIncludeDoubleSlash = regexp.MustCompile(`\/{2,}`)
-	var mustNotIncludeDoubleDots = regexp.MustCompile(`\.{2,}`)
 	var mustNotStartOrEndWithSlash = regexp.MustCompile(`^\/|\/$`)
+	var mustNotContainBlacklistedChars = regexp.MustCompile(`\?|\\|\~|\^|\:|\*|\[|\@|\s`)
+	var mustNotContainDoubleSlash = regexp.MustCompile(`\/{2,}`)
+	var mustNotContainDoubleDots = regexp.MustCompile(`\.{2,}`)
 
-	return !mustNotContainBlacklistedChars.MatchString(tag) &&
-		!mustNotEndWithDot.MatchString(tag) &&
-		!mustNotIncludeDoubleSlash.MatchString(tag) &&
-		!mustNotIncludeDoubleDots.MatchString(tag) &&
-		!mustNotStartOrEndWithSlash.MatchString(tag)
+	return !mustNotEndWithDot.MatchString(tag) &&
+		!mustNotStartOrEndWithSlash.MatchString(tag) &&
+		!mustNotContainBlacklistedChars.MatchString(tag) &&
+		!mustNotContainDoubleSlash.MatchString(tag) &&
+		!mustNotContainDoubleDots.MatchString(tag)
 }
