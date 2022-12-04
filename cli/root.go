@@ -36,7 +36,7 @@ var RootCommand = &cobra.Command{
 		}
 
 		if !git.IsValidTagName(strings.TrimSuffix(rootPrefixFlag, ".")) {
-			log.Fatal().Msg("invalid tag prefix")
+			log.Fatal().Msg("invalid version prefix")
 		}
 
 		if !slices.Contains(validFormats, rootFormatFlag) {
