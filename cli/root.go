@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/Masterminds/semver"
 	gogit "github.com/go-git/go-git/v5"
@@ -32,6 +33,10 @@ var RootCommand = &cobra.Command{
 			"github-action",
 			"json",
 			"version",
+		}
+
+		if !git.IsValidTagName(strings.TrimSuffix(rootPrefixFlag, ".")) {
+			log.Fatal().Msg("invalid tag prefix")
 		}
 
 		if !slices.Contains(validFormats, rootFormatFlag) {
