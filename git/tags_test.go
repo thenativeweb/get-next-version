@@ -89,15 +89,15 @@ func TestGetAllSemVerTags(t *testing.T) {
 }
 
 func TestIsValidTagName(t *testing.T) {
-	assert.True(t, git.IsValidTagName("v1.2.3"))
-	assert.True(t, git.IsValidTagName("1.2.3"))
-	assert.False(t, git.IsValidTagName("?1.2.3"))
-	assert.False(t, git.IsValidTagName("1.2//.3"))
-	assert.False(t, git.IsValidTagName("1.2.3."))
-	assert.False(t, git.IsValidTagName("1..2.3"))
 	assert.False(t, git.IsValidTagName("/1.2.3"))
-	assert.True(t, git.IsValidTagName("1.2/.3"))
+	assert.False(t, git.IsValidTagName("1..2.3"))
+	assert.False(t, git.IsValidTagName("1.2.3."))
 	assert.False(t, git.IsValidTagName("1.2.3/"))
+	assert.False(t, git.IsValidTagName("1.2//.3"))
+	assert.False(t, git.IsValidTagName("?1.2.3"))
+	assert.True(t, git.IsValidTagName("1.2.3"))
+	assert.True(t, git.IsValidTagName("1.2/.3"))
+	assert.True(t, git.IsValidTagName("v1.2.3"))
 }
 
 func BenchmarkIsValidTagName(b *testing.B) {
