@@ -87,32 +87,3 @@ func TestGetAllSemVerTags(t *testing.T) {
 		assert.ElementsMatch(t, test.expectedTagNames, tagNames)
 	}
 }
-
-func TestIsValidTagName(t *testing.T) {
-	for _, tt := range []struct {
-		name     string
-		tagName  string
-		expected bool
-	}{
-		{name: "valid tag name without prefix", tagName: "1.2.3", expected: true},
-		{name: "valid tag name with prefix", tagName: "v1.2.3", expected: true},
-		{name: "tag name starting with dot", tagName: ".1.2.3", expected: true},
-		{name: "tag name containing double slashes", tagName: "1./2/.3", expected: true},
-		{name: "tag name with duplicated dots", tagName: "1..2.3", expected: false},
-		{name: "tag name ending with dot", tagName: "1.2.3.", expected: false},
-		{name: "tag name starting with slash", tagName: "/1.2.3", expected: false},
-		{name: "tag name ending with slash", tagName: "1.2.3/", expected: false},
-		{name: "tag name containing double consecutive slashes", tagName: "1.//2.3", expected: false},
-		{name: "tag name containing question mark", tagName: "1.2.?3", expected: false},
-	} {
-		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.expected, git.IsValidTagName(tt.tagName))
-		})
-	}
-}
-
-func BenchmarkIsValidTagName(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		git.IsValidTagName("v1.2.3")
-	}
-}

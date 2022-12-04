@@ -2,14 +2,13 @@ package cli
 
 import (
 	"fmt"
-	"strings"
-
 	"github.com/Masterminds/semver"
 	gogit "github.com/go-git/go-git/v5"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/thenativeweb/get-next-version/cliutil"
 	"github.com/thenativeweb/get-next-version/git"
+	"github.com/thenativeweb/get-next-version/util"
 	"github.com/thenativeweb/get-next-version/versioning"
 	"golang.org/x/exp/slices"
 )
@@ -35,8 +34,8 @@ var RootCommand = &cobra.Command{
 			"version",
 		}
 
-		if !git.IsValidTagName(strings.TrimSuffix(rootPrefixFlag, ".")) {
-			log.Fatal().Msg("invalid version prefix")
+		if valid, prefixValidationError := util.IsValidTagPrefix(rootPrefixFlag); !valid {
+			log.Fatal().Msgf("invalid version prefix %+q", prefixValidationError)
 		}
 
 		if !slices.Contains(validFormats, rootFormatFlag) {

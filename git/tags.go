@@ -3,8 +3,6 @@ package git
 import (
 	"errors"
 	"fmt"
-	"regexp"
-
 	"github.com/Masterminds/semver"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
@@ -52,26 +50,4 @@ func GetAllSemVerTags(repository *git.Repository) (Tags, error) {
 	}
 
 	return tags, nil
-}
-
-/*
-IsValidTagName runs a series of regex checks to ensure that the tag name is valid
-  Tags cannot begin or end with, or contain multiple consecutive / characters.
-  They cannot contain any of the following characters \, ?, ~, ^, :, * , [, @.
-  They cannot contain a space.
-  They cannot end with a . or have two consecutive .. anywhere within them.
-  Tags are not case-sensitive.
-*/
-func IsValidTagName(tag string) bool {
-	var mustNotEndWithDot = regexp.MustCompile(`\.$`)
-	var mustNotStartOrEndWithSlash = regexp.MustCompile(`^\/|\/$`)
-	var mustNotContainBlacklistedChars = regexp.MustCompile(`\?|\\|\~|\^|\:|\*|\[|\@|\s`)
-	var mustNotContainDoubleSlash = regexp.MustCompile(`\/{2,}`)
-	var mustNotContainDoubleDots = regexp.MustCompile(`\.{2,}`)
-
-	return !mustNotEndWithDot.MatchString(tag) &&
-		!mustNotStartOrEndWithSlash.MatchString(tag) &&
-		!mustNotContainBlacklistedChars.MatchString(tag) &&
-		!mustNotContainDoubleSlash.MatchString(tag) &&
-		!mustNotContainDoubleDots.MatchString(tag)
 }
