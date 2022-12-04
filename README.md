@@ -33,7 +33,7 @@ Optionally, you may hand over the `--repository` (or short `-r`) flag to specify
 $ get-next-version --repository <PATH>
 ```
 
-If you need to prefix the version, you can use the `--prefix` (or short `-p`) flag.
+If you need to prefix the version, you can use the `--prefix` (or short `-p`) flag. Note that the prefix must be a valid tag name on its own (see [implementation comments](git/tags.go#L65) for details).
 
 By default, output will be shown in a human-readable format. If you want to show the output in a machine-readable format, you can use the `--format` (or short `-f`) flag:
 
