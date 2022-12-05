@@ -21,7 +21,7 @@ func TestIsValidVersionPrefix(t *testing.T) {
 		{name: "prefix containing double consecutive slashes", prefix: "test//foo", expected: false},
 
 		{name: "prefix ending with dot", prefix: "test.", expected: true},
-		{name: "prefix containing a single dot", prefix: "test..foo", expected: false},
+		{name: "prefix containing a single dot", prefix: "test.foo", expected: true},
 		{name: "prefix containing duplicated dots", prefix: "test..foo", expected: false},
 
 		{name: "tag name starting with slash", prefix: "/test", expected: false},
