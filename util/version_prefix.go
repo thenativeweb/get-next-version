@@ -31,7 +31,7 @@ func IsValidVersionPrefix(prefix string) (bool, error) {
 	}
 
 	if !versionPrefixCharSetValidation.MatchString(prefix) {
-		return false, errors.New("version prefix must not contain invalid character(s) or begin with /")
+		return false, errors.New("version prefix must not contain invalid character(s) or begin with slash")
 	}
 	if versionPrefixConsecutiveCharValidation.MatchString(prefix) {
 		return false, errors.New("version prefix must not contain multiple consecutive slashes or dots")
