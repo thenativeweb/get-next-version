@@ -7,8 +7,8 @@ import (
 	"github.com/thenativeweb/get-next-version/util"
 )
 
-func TestIsValidTagPrefix(t *testing.T) {
-	for _, tt := range []struct {
+func TestIsValidVersionPrefix(t *testing.T) {
+	for _, testcase := range []struct {
 		name     string
 		prefix   string
 		expected bool
@@ -27,14 +27,14 @@ func TestIsValidTagPrefix(t *testing.T) {
 		{name: "tag name starting with slash", prefix: "/test", expected: false},
 		{name: "tag name ending with slash", prefix: "test/", expected: true},
 	} {
-		t.Run(tt.name, func(t *testing.T) {
-			result, err := util.IsValidTagPrefix(tt.prefix)
-			if !tt.expected {
+		t.Run(testcase.name, func(t *testing.T) {
+			result, err := util.IsValidVersionPrefix(testcase.prefix)
+			if !testcase.expected {
 				assert.Error(t, err)
 			} else {
 				assert.NoError(t, err)
 			}
-			assert.Equal(t, tt.expected, result)
+			assert.Equal(t, testcase.expected, result)
 		})
 	}
 }

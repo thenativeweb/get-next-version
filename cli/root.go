@@ -34,7 +34,7 @@ var RootCommand = &cobra.Command{
 			"version",
 		}
 
-		if valid, prefixValidationError := util.IsValidTagPrefix(rootPrefixFlag); !valid {
+		if isValid, prefixValidationError := util.IsValidVersionPrefix(rootPrefixFlag); !isValid {
 			log.Fatal().Msgf("invalid version prefix %+q", prefixValidationError)
 		}
 
