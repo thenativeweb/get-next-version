@@ -3,7 +3,6 @@ package git
 import (
 	"errors"
 	"fmt"
-
 	"github.com/Masterminds/semver"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
