@@ -18,7 +18,7 @@ func init() {
 }
 
 /*
-IsValidVersionPrefix runs a series of regex checks to ensure that the version prefix is valid
+IsValidVersionPrefix runs a series of checks to ensure that the version prefix is valid
 Allowed characters: alphanumerics, dot, dash, slash, underscore
 Version prefixes must not:
   - begin with a slash
