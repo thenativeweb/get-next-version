@@ -9,9 +9,6 @@ permissions:
   contents: write
   packages: write
 
-env:
-  CGO_ENABLED: '1'
-
 jobs:
   qa:
     name: Release
