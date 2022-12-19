@@ -1,25 +1,25 @@
 package cli
 
 import (
-	"fmt"
 	"github.com/Masterminds/semver"
 	gogit "github.com/go-git/go-git/v5"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
-	"github.com/thenativeweb/get-next-version/cliutil"
+	"golang.org/x/exp/slices"
+
 	"github.com/thenativeweb/get-next-version/git"
+	"github.com/thenativeweb/get-next-version/target"
 	"github.com/thenativeweb/get-next-version/util"
 	"github.com/thenativeweb/get-next-version/versioning"
-	"golang.org/x/exp/slices"
 )
 
 var rootRepositoryFlag string
-var rootFormatFlag string
+var rootTargetFlag string
 var rootPrefixFlag string
 
 func init() {
 	RootCommand.Flags().StringVarP(&rootRepositoryFlag, "repository", "r", ".", "sets the path to the repository")
-	RootCommand.Flags().StringVarP(&rootFormatFlag, "format", "f", "version", "sets the output format")
+	RootCommand.Flags().StringVarP(&rootTargetFlag, "target", "t", "version", "sets the output target")
 	RootCommand.Flags().StringVarP(&rootPrefixFlag, "prefix", "p", "", "sets the version prefix")
 }
 
@@ -28,7 +28,7 @@ var RootCommand = &cobra.Command{
 	Short: "Get the next version according for semantic versioning",
 	Long:  "Get the next version according for semantic versioning.",
 	Run: func(_ *cobra.Command, _ []string) {
-		validFormats := []string{
+		validTargets := []string{
 			"github-action",
 			"json",
 			"version",
@@ -38,8 +38,8 @@ var RootCommand = &cobra.Command{
 			log.Fatal().Msgf("invalid version prefix %+q", prefixValidationError)
 		}
 
-		if !slices.Contains(validFormats, rootFormatFlag) {
-			log.Fatal().Msg("invalid format")
+		if !slices.Contains(validTargets, rootTargetFlag) {
+			log.Fatal().Msg("invalid target")
 		}
 
 		repository, err := gogit.PlainOpen(rootRepositoryFlag)
@@ -56,9 +56,9 @@ var RootCommand = &cobra.Command{
 			nextVersion, hasNextVersion = versioning.CalculateNextVersion(result.LatestReleaseVersion, result.ConventionalCommitTypes)
 		}
 
-		lines := cliutil.Format(nextVersion, hasNextVersion, rootFormatFlag, rootPrefixFlag)
-		for _, line := range lines {
-			fmt.Println(line)
+		err = target.WriteOutput(nextVersion, hasNextVersion, rootTargetFlag, rootPrefixFlag)
+		if err != nil {
+			log.Fatal().Err(err).Msg("could not write output")
 		}
 	},
 }

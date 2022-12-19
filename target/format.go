@@ -1,4 +1,4 @@
-package cliutil
+package target
 
 import (
 	"fmt"
@@ -11,8 +11,8 @@ func Format(nextVersion semver.Version, hasNextVersion bool, format string, pref
 	switch format {
 	case "github-action":
 		return []string{
-			fmt.Sprintf("::set-output name=version::%s", versionString),
-			fmt.Sprintf("::set-output name=hasNextVersion::%v", hasNextVersion),
+			fmt.Sprintf("version=%s", versionString),
+			fmt.Sprintf("hasNextVersion=%v", hasNextVersion),
 		}
 	case "json":
 		return []string{

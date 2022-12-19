@@ -4,4 +4,4 @@ set -e
 
 /action/get-next-version \
   --repository /github/workspace \
-  --format github-action
+  --target github-action
