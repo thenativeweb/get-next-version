@@ -35,7 +35,7 @@ $ get-next-version --repository <PATH>
 
 If you need to prefix the version, you can use the `--prefix` (or short `-p`) flag. Note that the prefix must be a valid tag name on its own.
 
-By default, output will be printed to the console in a human-readable format. If you want to show the output in a machine-readable format, you can use the `--target` (or short `-t`) flag:
+By default, output will be printed to the console in a human-readable format. If you want to print the output in a machine-readable format, you can use the `--target` (or short `-t`) flag:
 
 ```shell
 # Print output in JSON format
@@ -51,7 +51,7 @@ For convenience, you may use the GitHub Action when running `get-next-version` i
 
 **⚠️ When cloning the repository, make sure to set the `fetch-depth` option to `0`, otherwise `get-next-version` will not be able to analyse the history of the repository!**
 
-**⚠️ The action uses the parameter `target=github-action` by default, which will not print any human-readable output, but only write the output to the GITHUB_OUTPUT file**
+**⚠️ The action uses the parameter `target=github-action` by default, which will not print any human-readable output, but only write the output to the GITHUB_OUTPUT file.**
 
 An example workflow that makes use of the GitHub Action is shown below:
 
