@@ -9,7 +9,7 @@ require (
 	github.com/mattn/go-isatty v0.0.17
 	github.com/rs/zerolog v1.29.0
 	github.com/spf13/cobra v1.6.1
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.2
 	golang.org/x/exp v0.0.0-20220713135740-79cabaa25d75
 )
 
