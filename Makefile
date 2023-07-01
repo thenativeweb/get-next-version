@@ -5,9 +5,9 @@ else
 OPEN := xdg-open
 endif
 
-qa: analyse test
+qa: analyze test
 
-analyse:
+analyze:
 	@go vet ./...
 
 test:
@@ -50,7 +50,7 @@ build: build-auto
 
 build-all: build-darwin-amd64 build-darwin-arm64 build-linux-amd64 build-windows-amd64
 
-.PHONY: analyse \
+.PHONY: analyze \
 		benchmark \
 		build \
 		build-all \
