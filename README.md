@@ -21,13 +21,13 @@ $ sudo mv get-next-version /usr/local/bin
 
 ## Quick Start
 
-Go to the repository and run `get-next-version`. The tool will analyse the history of your repository and output the next version for your release.
+Go to the repository and run `get-next-version`. The tool will analyze the history of your repository and output the next version for your release.
 
 ```shell
 $ get-next-version
 ```
 
-Optionally, you may hand over the `--repository` (or short `-r`) flag to specify the path to the repository you want to analyse, if it is not in the current working directory.
+Optionally, you may hand over the `--repository` (or short `-r`) flag to specify the path to the repository you want to analyze, if it is not in the current working directory.
 
 ```shell
 $ get-next-version --repository <PATH>
@@ -49,7 +49,7 @@ $ get-next-version --target github-action
 
 For convenience, you may use the GitHub Action when running `get-next-version` inside a workflow on GitHub.
 
-**⚠️ When cloning the repository, make sure to set the `fetch-depth` option to `0`, otherwise `get-next-version` will not be able to analyse the history of the repository!**
+**⚠️ When cloning the repository, make sure to set the `fetch-depth` option to `0`, otherwise `get-next-version` will not be able to analyze the history of the repository!**
 
 **⚠️ The action uses the parameter `target=github-action` by default, which will not print any human-readable output, but only write the output to the GITHUB_OUTPUT file.**
 
