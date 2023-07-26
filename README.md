@@ -1,6 +1,6 @@
 # get-next-version
 
-get-next-version gets the next version for your repository according to semantic versioning based on conventional commits.
+get-next-version gets the next version for your repository according to semantic versioning based on [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/#specification).
 
 ## Installation
 
