@@ -74,6 +74,8 @@ jobs:
     - name: Get next version
       id: get_next_version
       uses: thenativeweb/get-next-version@main
+      with:
+        prefix: 'v' # optional, defaults to ''
     - name: Show the next version
       run: |
         echo ${{ steps.get_next_version.outputs.version }}
