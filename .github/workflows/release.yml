@@ -68,7 +68,7 @@ jobs:
 
     - name: Set up QEMU
       if: ${{ steps.get_next_version.outputs.hasNextVersion == 'true' }}
-      uses: docker/setup-qemu-action@v2
+      uses: docker/setup-qemu-action@v3
     - name: Set up Docker Buildx
       if: ${{ steps.get_next_version.outputs.hasNextVersion == 'true' }}
       uses: docker/setup-buildx-action@v3
