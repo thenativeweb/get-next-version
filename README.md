@@ -84,6 +84,8 @@ jobs:
 
 ## Commit messages
 
+A `chore` is used for maintenance and causes no changes.
+
 A `fix` is used for bug fixes and changes the patch level: 1.2.3 -> 1.2.4
 
 A `feat` is used for introducing features and changes the minor level: 1.2.3 -> 1.3.0
