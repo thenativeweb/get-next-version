@@ -81,3 +81,22 @@ jobs:
         echo ${{ steps.get_next_version.outputs.version }}
         echo ${{ steps.get_next_version.outputs.hasNextVersion }}
 ```
+
+## Commit messages
+
+A `chore` is used for maintenance and causes no changes.
+
+A `fix` is used for bug fixes and changes the patch level: 1.2.3 -> 1.2.4
+
+A `feat` is used for introducing features and changes the minor level: 1.2.3 -> 1.3.0
+
+A `feat!` is used for breaking changes and changes the major level: 1.2.3 -> 2.0.0
+
+**Examples:**
+
+- `chore: Initial commit`
+- `fix: Correct typo`
+- `feat: Add support for Node.js 18`
+- `feat!: Change API from v1 to v2`
+
+Note that `!` indicate breaking changes.
