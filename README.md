@@ -82,21 +82,20 @@ jobs:
         echo ${{ steps.get_next_version.outputs.hasNextVersion }}
 ```
 
-## Commit messages
+## Using commit messages
 
-A `chore` is used for maintenance and causes no changes.
+In case you are not familiar with conventional commits (as mentioned above), here is a short summary. Basically, you should prefix your commit messages with one of the following keywords:
 
-A `fix` is used for bug fixes and changes the patch level: 1.2.3 -> 1.2.4
+- `chore` – used for maintenance, does not result in a new version
+- `fix` – used for bug fixes, results in a new patch version (e.g. from `1.2.3` to `1.2.4`)
+- `feat` – used for introducing new features, results in a new minor version (e.g. from `1.2.3` to `1.3.0`)
+- `feat!` – used for breaking changes, results in a new major version (e.g. from `1.2.3` to `2.0.0`)
 
-A `feat` is used for introducing features and changes the minor level: 1.2.3 -> 1.3.0
-
-A `feat!` is used for breaking changes and changes the major level: 1.2.3 -> 2.0.0
-
-**Examples:**
+Some examples for commit messages are shown below:
 
 - `chore: Initial commit`
 - `fix: Correct typo`
 - `feat: Add support for Node.js 18`
 - `feat!: Change API from v1 to v2`
 
-Note that `!` indicate breaking changes.
+Please note that `!` indicates breaking changes, and will always result in a new major version, independent of the type of change.
