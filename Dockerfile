@@ -4,7 +4,7 @@ RUN mkdir /app
 WORKDIR /app
 
 RUN apk update && \
-    apk add --no-cache build-base make
+    apk add --no-cache build-base git make
 
 ADD . .
 RUN make build
