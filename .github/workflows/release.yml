@@ -75,7 +75,9 @@ jobs:
     - name: Build and push docker image
       if: ${{ steps.get_next_version.outputs.hasNextVersion == 'true' }}
       uses: docker/build-push-action@v5
+      env:
+          DOCKER_REPOSITORY: ghcr.io/thenativeweb/get-next-version
       with:
         platforms: linux/amd64,linux/arm64
         push: true
-        tags: ghcr.io/thenativeweb/get-next-version:latest,ghcr.io/thenativeweb/get-next-version:${{steps.get_next_version.outputs.version}}
+        tags: ${{ env.DOCKER_REPOSITORY }}:latest,${{ env.DOCKER_REPOSITORY }}:${{steps.get_next_version.outputs.version}}
