@@ -39,7 +39,7 @@ detect-version:
 	@echo "Current Version: ${VERSION}"
 
 build-auto: qa clean detect-version
-	@go build -ldflags="-X 'github.com/thenativeweb/get-next-version/version.Version=$(VERSION)'" -o ./build/get-next-version
+	@go build $(COMMON_FLAGS) -o $(BUILD_DIR)/$(BINARY_NAME)
 
 build-darwin-amd64: qa clean detect-version
 	@GOOS=darwin GOARCH=amd64 go build $(COMMON_FLAGS) -o $(BUILD_DIR)/$(BINARY_NAME)-darwin-amd64
