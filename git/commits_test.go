@@ -142,7 +142,7 @@ func TestGetConventionalCommitTypesSinceLatestRelease(t *testing.T) {
 			repository.CreateTag(commit.tag, head.Hash(), createTagOpts)
 		}
 
-		actual, err := git.GetConventionalCommitTypesSinceLastRelease(repository)
+		actual, err := git.GetConventionalCommitTypesSinceLastRelease(repository, "")
 
 		if test.doExpectError {
 			assert.Error(t, err)

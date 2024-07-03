@@ -16,11 +16,13 @@ import (
 var rootRepositoryFlag string
 var rootTargetFlag string
 var rootPrefixFlag string
+var tagFilter string
 
 func init() {
 	RootCommand.Flags().StringVarP(&rootRepositoryFlag, "repository", "r", ".", "sets the path to the repository")
 	RootCommand.Flags().StringVarP(&rootTargetFlag, "target", "t", "version", "sets the output target")
 	RootCommand.Flags().StringVarP(&rootPrefixFlag, "prefix", "p", "", "sets the version prefix")
+	RootCommand.Flags().StringVarP(&tagFilter, "filter", "f", "", "filters any tags containing pattern")
 }
 
 var RootCommand = &cobra.Command{
@@ -49,7 +51,7 @@ var RootCommand = &cobra.Command{
 
 		var nextVersion semver.Version
 		var hasNextVersion bool
-		result, err := git.GetConventionalCommitTypesSinceLastRelease(repository)
+		result, err := git.GetConventionalCommitTypesSinceLastRelease(repository, tagFilter)
 		if err != nil {
 			log.Fatal().Msg(err.Error())
 		} else {

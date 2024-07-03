@@ -72,7 +72,7 @@ func TestGetAllSemVerTags(t *testing.T) {
 			}
 		}
 
-		tags, err := git.GetAllSemVerTags(repository)
+		tags, err := git.GetAllSemVerTags(repository, "")
 
 		if test.doesExpectError {
 			assert.Error(t, err)

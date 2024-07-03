@@ -3,6 +3,8 @@ package git
 import (
 	"errors"
 	"fmt"
+	"strings"
+
 	"github.com/Masterminds/semver"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
@@ -10,7 +12,7 @@ import (
 
 type Tags = map[plumbing.Hash]*semver.Version
 
-func GetAllSemVerTags(repository *git.Repository) (Tags, error) {
+func GetAllSemVerTags(repository *git.Repository, tagFilter string) (Tags, error) {
 	tagsIterator, err := repository.Tags()
 	if err != nil {
 		return Tags{}, err
@@ -33,7 +35,12 @@ func GetAllSemVerTags(repository *git.Repository) (Tags, error) {
 		default:
 			return err
 		}
-
+		if len(tagFilter) > 0 {
+			if strings.Contains(tag.Name().Short(), tagFilter) {
+				// do not consider it in the calculation
+				return nil
+			}
+		}
 		version, err := semver.NewVersion(tag.Name().Short())
 		if err != nil {
 			return nil
