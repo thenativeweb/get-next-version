@@ -29,7 +29,10 @@ func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (Con
 		}
 		return ConventionalCommmitTypesResult{}, err
 	}
-	commitIterator, err := repository.Log(&git.LogOptions{From: head.Hash()})
+	commitIterator, err := repository.Log(&git.LogOptions{
+		From:  head.Hash(),
+		Order: git.LogOrderCommitterTime,
+	})
 	if err != nil {
 		return ConventionalCommmitTypesResult{}, err
 	}
