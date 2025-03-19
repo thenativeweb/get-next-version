@@ -29,7 +29,7 @@ jobs:
     - name: Use Go
       uses: actions/setup-go@v5
       with:
-        go-version: '1.18'
+        go-version-file: ./go.mod
     - name: Configure action to use Dockerfile for local execution
       run: |
         cat ./action.yml.tpl | sed "s/<docker-image>/Dockerfile/" > ./action.yml
