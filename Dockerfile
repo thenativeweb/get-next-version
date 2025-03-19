@@ -1,4 +1,4 @@
-FROM golang:1.18.3-alpine as build
+FROM golang:1.24.1-alpine3.21 as build
 
 RUN mkdir /app
 WORKDIR /app
@@ -11,7 +11,7 @@ RUN make build
 
 
 
-FROM alpine:3.18.4
+FROM alpine:3.21.3
 
 RUN apk update && \
     apk add --no-cache git

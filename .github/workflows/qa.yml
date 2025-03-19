@@ -13,6 +13,6 @@ jobs:
     - name: Use Go
       uses: actions/setup-go@v5
       with:
-        go-version: '1.18'
+        go-version-file: ./go.mod
     - name: Run QA
       run: make
