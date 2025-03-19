@@ -5,8 +5,10 @@ import (
 	"runtime/debug"
 )
 
-var Version = "(version unavailable)"
-var GitVersion = "(version unavailable)"
+var (
+	Version    = "(version unavailable)"
+	GitVersion = "(version unavailable)"
+)
 
 func init() {
 	info, ok := debug.ReadBuildInfo()

@@ -8,7 +8,6 @@ import (
 
 	"github.com/Masterminds/semver"
 	"github.com/stretchr/testify/assert"
-
 	"github.com/thenativeweb/get-next-version/target"
 )
 

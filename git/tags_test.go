@@ -43,6 +43,7 @@ func TestGetAllSemVerTags(t *testing.T) {
 			expectedTagNames: []string{"1.0.0", "2.0.0"},
 		},
 		{
+			// The 'v' prefix in 'vsomething-else' is intentionally used here because it is the prefix for 'version'.
 			tagsPerBranch:    map[string][][]string{"main": {{"1.0.0"}, {"v2.0.0"}, {"vsomething-else"}}},
 			doesExpectError:  false,
 			expectedTagNames: []string{"1.0.0", "2.0.0"},

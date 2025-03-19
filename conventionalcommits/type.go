@@ -2,6 +2,7 @@ package conventionalcommits
 
 import (
 	"errors"
+	"slices"
 	"strings"
 )
 
@@ -14,10 +15,12 @@ const (
 	BreakingChange
 )
 
-var choreTypes = []string{"build", "chore", "ci", "docs", "style", "refactor", "perf", "test"}
-var fixTypes = []string{"fix"}
-var featureTypes = []string{"feat"}
-var allTypes []string
+var (
+	choreTypes   = []string{"build", "chore", "ci", "docs", "style", "refactor", "perf", "test"}
+	fixTypes     = []string{"fix"}
+	featureTypes = []string{"feat"}
+	allTypes     []string
+)
 
 func initType() {
 	for _, types := range [][]string{choreTypes, fixTypes, featureTypes} {
@@ -26,22 +29,16 @@ func initType() {
 }
 
 func StringToType(s string) (Type, error) {
-	for _, choreType := range choreTypes {
-		if strings.ToLower(s) == choreType {
-			return Chore, nil
-		}
+	if slices.Contains(choreTypes, strings.ToLower(s)) {
+		return Chore, nil
 	}
 
-	for _, fixType := range fixTypes {
-		if strings.ToLower(s) == fixType {
-			return Fix, nil
-		}
+	if slices.Contains(fixTypes, strings.ToLower(s)) {
+		return Fix, nil
 	}
 
-	for _, featureType := range featureTypes {
-		if strings.ToLower(s) == featureType {
-			return Feature, nil
-		}
+	if slices.Contains(featureTypes, strings.ToLower(s)) {
+		return Feature, nil
 	}
 
 	return Chore, errors.New("invalid string for conventional commit type")
