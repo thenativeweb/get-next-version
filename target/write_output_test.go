@@ -1,6 +1,7 @@
 package target_test
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"testing"
@@ -64,9 +65,10 @@ func TestWriteOutput(t *testing.T) {
 	})
 
 	t.Run("returns an error if the output file cannot be opened for writing", func(t *testing.T) {
-		os.Setenv("GITHUB_OUTPUT", "/root")
+		path := os.TempDir()
+		os.Setenv("GITHUB_OUTPUT", path)
 
 		err = target.WriteOutput(*version, true, "github-action", "")
-		assert.EqualError(t, err, "could not open github output file for writing: open /root: is a directory")
+		assert.EqualError(t, err, fmt.Sprintf("could not open github output file for writing: open %s: is a directory", path))
 	})
 }

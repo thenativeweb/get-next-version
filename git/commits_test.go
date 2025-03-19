@@ -6,6 +6,7 @@ import (
 	"github.com/Masterminds/semver"
 	gogit "github.com/go-git/go-git/v5"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/thenativeweb/get-next-version/conventionalcommits"
 	"github.com/thenativeweb/get-next-version/git"
 	"github.com/thenativeweb/get-next-version/testutil"
@@ -120,18 +121,24 @@ func TestGetConventionalCommitTypesSinceLatestRelease(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		repository := testutil.SetUpInMemoryRepository()
-		worktree, _ := repository.Worktree()
+		repository, err := testutil.SetUpInMemoryRepository()
+		require.NoError(t, err)
+
+		worktree, err := repository.Worktree()
+		require.NoError(t, err)
 
 		for _, commit := range test.commitHistory {
 			commitOptions := testutil.CreateCommitOptions()
-			worktree.Commit(commit.message, commitOptions)
+			_, err := worktree.Commit(commit.message, commitOptions)
+			require.NoError(t, err)
 
 			if commit.tag == "" {
 				continue
 			}
 
-			head, _ := repository.Head()
+			head, err := repository.Head()
+			require.NoError(t, err)
+
 			var createTagOpts *gogit.CreateTagOptions
 			if test.annotateTags {
 				createTagOpts = &gogit.CreateTagOptions{
@@ -139,7 +146,8 @@ func TestGetConventionalCommitTypesSinceLatestRelease(t *testing.T) {
 					Tagger:  commitOptions.Author,
 				}
 			}
-			repository.CreateTag(commit.tag, head.Hash(), createTagOpts)
+			_, err = repository.CreateTag(commit.tag, head.Hash(), createTagOpts)
+			require.NoError(t, err)
 		}
 
 		actual, err := git.GetConventionalCommitTypesSinceLastRelease(repository)

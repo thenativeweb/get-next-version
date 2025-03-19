@@ -6,10 +6,14 @@ import (
 	"github.com/go-git/go-git/v5/storage/memory"
 )
 
-func SetUpInMemoryRepository() *git.Repository {
+func SetUpInMemoryRepository() (*git.Repository, error) {
 	storer := memory.NewStorage()
 	fs := memfs.New()
 
-	repository, _ := git.Init(storer, fs)
-	return repository
+	repository, err := git.Init(storer, fs)
+	if err != nil {
+		return nil, err
+	}
+
+	return repository, nil
 }
