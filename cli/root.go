@@ -5,17 +5,18 @@ import (
 	gogit "github.com/go-git/go-git/v5"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
-	"golang.org/x/exp/slices"
-
 	"github.com/thenativeweb/get-next-version/git"
 	"github.com/thenativeweb/get-next-version/target"
 	"github.com/thenativeweb/get-next-version/util"
 	"github.com/thenativeweb/get-next-version/versioning"
+	"golang.org/x/exp/slices"
 )
 
-var rootRepositoryFlag string
-var rootTargetFlag string
-var rootPrefixFlag string
+var (
+	rootRepositoryFlag string
+	rootTargetFlag     string
+	rootPrefixFlag     string
+)
 
 func init() {
 	RootCommand.Flags().StringVarP(&rootRepositoryFlag, "repository", "r", ".", "sets the path to the repository")
