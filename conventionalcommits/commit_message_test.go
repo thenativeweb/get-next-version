@@ -28,7 +28,7 @@ func TestCommitMessageToType(t *testing.T) {
 		{message: "chore:\n\nSome-Token: ", doExpectError: false, expectedCommitType: conventionalcommits.Chore},
 		{message: "Chore:", doExpectError: false, expectedCommitType: conventionalcommits.Chore},
 		{message: "", doExpectError: true, expectedCommitType: conventionalcommits.Chore},
-		{message: "invaild:", doExpectError: true, expectedCommitType: conventionalcommits.Chore},
+		{message: "invalid:", doExpectError: true, expectedCommitType: conventionalcommits.Chore},
 	}
 
 	for _, test := range tests {

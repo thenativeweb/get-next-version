@@ -9,9 +9,11 @@ import (
 	"github.com/thenativeweb/get-next-version/util"
 )
 
-var bodyRegex *regexp.Regexp
-var breakingFooterTokens = []string{"BREAKING CHANGE", "BREAKING-CHANGE"}
-var footerTokenSeperators = []string{": ", " #"}
+var (
+	bodyRegex             *regexp.Regexp
+	breakingFooterTokens  = []string{"BREAKING CHANGE", "BREAKING-CHANGE"}
+	footerTokenSeparators = []string{": ", " #"}
+)
 
 func initCommitMessage() {
 	typesRegexString := ""
@@ -60,8 +62,8 @@ func CommitMessageToType(message string) (Type, error) {
 
 	var breakingFooterPrefixes []string
 	for _, token := range breakingFooterTokens {
-		for _, seperator := range footerTokenSeperators {
-			breakingFooterPrefixes = append(breakingFooterPrefixes, token+seperator)
+		for _, separator := range footerTokenSeparators {
+			breakingFooterPrefixes = append(breakingFooterPrefixes, token+separator)
 		}
 	}
 	for _, footer := range footers {
@@ -70,18 +72,18 @@ func CommitMessageToType(message string) (Type, error) {
 		}
 	}
 
-	parsedMesageBody := bodyRegex.FindStringSubmatch(body)
-	if parsedMesageBody == nil {
+	parsedMessageBody := bodyRegex.FindStringSubmatch(body)
+	if parsedMessageBody == nil {
 		return Chore, errors.New("invalid message body for conventional commit message")
 	}
 
 	breakingIndicatorIndex := util.MustFind(bodyRegex.SubexpNames(), "breaking")
-	breakingIndicator := parsedMesageBody[breakingIndicatorIndex]
+	breakingIndicator := parsedMessageBody[breakingIndicatorIndex]
 	if breakingIndicator == "!" {
 		return BreakingChange, nil
 	}
 
 	typeIndex := util.MustFind(bodyRegex.SubexpNames(), "type")
 
-	return StringToType(parsedMesageBody[typeIndex])
+	return StringToType(parsedMessageBody[typeIndex])
 }
