@@ -6,7 +6,7 @@ updates:
     interval: weekly
   open-pull-requests-limit: 10
   assignees:
-  - thenativeweb/internal_get-next-version_dep
+  - thenativeweb/internal_dev
   labels:
   - Dependencies
   allow:
@@ -21,7 +21,7 @@ updates:
     interval: "weekly"
   open-pull-requests-limit: 10
   assignees:
-  - thenativeweb/internal_get-next-version_dep
+  - thenativeweb/internal_dev
   labels:
   - Dependencies
   commit-message:
