@@ -11,5 +11,6 @@ func CreateCommitOptions() *git.CommitOptions {
 			Name:  "John Doe",
 			Email: "john.doe@example.com",
 		},
+		AllowEmptyCommits: true,
 	}
 }

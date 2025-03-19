@@ -10,31 +10,31 @@ import (
 	"github.com/thenativeweb/get-next-version/conventionalcommits"
 )
 
-type ConventionalCommmitTypesResult struct {
+type ConventionalCommitTypesResult struct {
 	LatestReleaseVersion    *semver.Version
 	ConventionalCommitTypes []conventionalcommits.Type
 }
 
 var ErrNoCommitsFound = errors.New("no commits found")
 
-func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (ConventionalCommmitTypesResult, error) {
+func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (ConventionalCommitTypesResult, error) {
 	tags, err := GetAllSemVerTags(repository)
 	if err != nil {
-		return ConventionalCommmitTypesResult{}, err
+		return ConventionalCommitTypesResult{}, err
 	}
 	head, err := repository.Head()
 	if err != nil {
 		if err == plumbing.ErrReferenceNotFound {
-			return ConventionalCommmitTypesResult{}, ErrNoCommitsFound
+			return ConventionalCommitTypesResult{}, ErrNoCommitsFound
 		}
-		return ConventionalCommmitTypesResult{}, err
+		return ConventionalCommitTypesResult{}, err
 	}
 	commitIterator, err := repository.Log(&git.LogOptions{
 		From:  head.Hash(),
 		Order: git.LogOrderCommitterTime,
 	})
 	if err != nil {
-		return ConventionalCommmitTypesResult{}, err
+		return ConventionalCommitTypesResult{}, err
 	}
 
 	currentCommit, currentCommitErr := commitIterator.Next()
@@ -60,13 +60,13 @@ func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (Con
 
 	if currentCommitErr != nil {
 		if currentCommitErr != io.EOF {
-			return ConventionalCommmitTypesResult{}, currentCommitErr
+			return ConventionalCommitTypesResult{}, currentCommitErr
 		}
 
 		latestReleaseVersion = semver.MustParse("0.0.0")
 	}
 
-	return ConventionalCommmitTypesResult{
+	return ConventionalCommitTypesResult{
 		LatestReleaseVersion:    latestReleaseVersion,
 		ConventionalCommitTypes: conventionalCommitTypes,
 	}, nil

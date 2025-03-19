@@ -6,6 +6,7 @@ import (
 	gogit "github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/thenativeweb/get-next-version/git"
 	"github.com/thenativeweb/get-next-version/testutil"
 )
@@ -54,10 +55,13 @@ func TestGetAllSemVerTags(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		repository := testutil.SetUpInMemoryRepository()
+		repository, err := testutil.SetUpInMemoryRepository()
+		require.NoError(t, err)
 
 		for branchName, tagNames := range test.tagsPerBranch {
-			worktree, _ := repository.Worktree()
+			worktree, err := repository.Worktree()
+			require.NoError(t, err)
+
 			worktree.Checkout(&gogit.CheckoutOptions{
 				Create: true,
 				Branch: plumbing.ReferenceName(branchName),
@@ -65,7 +69,9 @@ func TestGetAllSemVerTags(t *testing.T) {
 
 			for _, tagNamesForCommit := range tagNames {
 				worktree.Commit("some message", testutil.CreateCommitOptions())
-				head, _ := repository.Head()
+				head, err := repository.Head()
+				require.NoError(t, err)
+
 				for _, tagName := range tagNamesForCommit {
 					repository.CreateTag(tagName, head.Hash(), nil)
 				}
