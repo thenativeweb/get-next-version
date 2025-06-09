@@ -5,7 +5,7 @@ go 1.24.1
 require (
 	github.com/Masterminds/semver v1.5.0
 	github.com/go-git/go-billy/v5 v5.6.2
-	github.com/go-git/go-git/v5 v5.16.0
+	github.com/go-git/go-git/v5 v5.16.1
 	github.com/mattn/go-isatty v0.0.20
 	github.com/rs/zerolog v1.34.0
 	github.com/spf13/cobra v1.9.1
