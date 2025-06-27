@@ -91,6 +91,22 @@ func TestSetCustomPrefixes(t *testing.T) {
 			expectedType:       conventionalcommits.Fix,
 			doExpectError:      false,
 		},
+		{
+			name:               "precedence: fix takes precedence over chore when in both",
+			customFixTypes:     []string{"fix", "perf"},
+			// Don't modify chore types, so "perf" will be in both
+			testString:         "perf",
+			expectedType:       conventionalcommits.Fix,
+			doExpectError:      false,
+		},
+		{
+			name:               "precedence: feature takes precedence over fix when in both",
+			customFixTypes:     []string{"fix", "enhance"},
+			customFeatureTypes: []string{"feat", "enhance"},
+			testString:         "enhance",
+			expectedType:       conventionalcommits.Feature,
+			doExpectError:      false,
+		},
 	}
 
 	for _, test := range tests {

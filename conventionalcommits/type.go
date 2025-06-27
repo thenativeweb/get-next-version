@@ -73,16 +73,19 @@ func ResetToDefaults() {
 }
 
 func StringToType(s string) (Type, error) {
-	if slices.Contains(choreTypes, strings.ToLower(s)) {
-		return Chore, nil
+	lowerS := strings.ToLower(s)
+	
+	// Check in order of precedence: Feature > Fix > Chore
+	if slices.Contains(featureTypes, lowerS) {
+		return Feature, nil
 	}
 
-	if slices.Contains(fixTypes, strings.ToLower(s)) {
+	if slices.Contains(fixTypes, lowerS) {
 		return Fix, nil
 	}
 
-	if slices.Contains(featureTypes, strings.ToLower(s)) {
-		return Feature, nil
+	if slices.Contains(choreTypes, lowerS) {
+		return Chore, nil
 	}
 
 	return Chore, errors.New("invalid string for conventional commit type")
