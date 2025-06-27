@@ -1,10 +1,13 @@
 package cli
 
 import (
+	"strings"
+	
 	"github.com/Masterminds/semver"
 	gogit "github.com/go-git/go-git/v5"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
+	"github.com/thenativeweb/get-next-version/conventionalcommits"
 	"github.com/thenativeweb/get-next-version/git"
 	"github.com/thenativeweb/get-next-version/target"
 	"github.com/thenativeweb/get-next-version/util"
@@ -13,15 +16,21 @@ import (
 )
 
 var (
-	rootRepositoryFlag string
-	rootTargetFlag     string
-	rootPrefixFlag     string
+	rootRepositoryFlag      string
+	rootTargetFlag          string
+	rootPrefixFlag          string
+	rootFeaturePrefixesFlag string
+	rootFixPrefixesFlag     string
+	rootChorePrefixesFlag   string
 )
 
 func init() {
 	RootCommand.Flags().StringVarP(&rootRepositoryFlag, "repository", "r", ".", "sets the path to the repository")
 	RootCommand.Flags().StringVarP(&rootTargetFlag, "target", "t", "version", "sets the output target")
 	RootCommand.Flags().StringVarP(&rootPrefixFlag, "prefix", "p", "", "sets the version prefix")
+	RootCommand.Flags().StringVar(&rootFeaturePrefixesFlag, "feature-prefixes", "", "sets custom feature prefixes (comma-separated)")
+	RootCommand.Flags().StringVar(&rootFixPrefixesFlag, "fix-prefixes", "", "sets custom fix prefixes (comma-separated)")
+	RootCommand.Flags().StringVar(&rootChorePrefixesFlag, "chore-prefixes", "", "sets custom chore prefixes (comma-separated)")
 }
 
 var RootCommand = &cobra.Command{
@@ -43,6 +52,9 @@ var RootCommand = &cobra.Command{
 			log.Fatal().Msg("invalid target")
 		}
 
+		// Configure custom prefixes if provided
+		configureCustomPrefixes()
+
 		repository, err := gogit.PlainOpen(rootRepositoryFlag)
 		if err != nil {
 			log.Fatal().Msg(err.Error())
@@ -62,4 +74,42 @@ var RootCommand = &cobra.Command{
 			log.Fatal().Err(err).Msg("could not write output")
 		}
 	},
+}
+
+// configureCustomPrefixes parses and sets custom prefixes if provided
+func configureCustomPrefixes() {
+	var choreTypes, fixTypes, featureTypes []string
+	
+	if rootChorePrefixesFlag != "" {
+		choreTypes = parseCommaSeparatedPrefixes(rootChorePrefixesFlag)
+	}
+	
+	if rootFixPrefixesFlag != "" {
+		fixTypes = parseCommaSeparatedPrefixes(rootFixPrefixesFlag)
+	}
+	
+	if rootFeaturePrefixesFlag != "" {
+		featureTypes = parseCommaSeparatedPrefixes(rootFeaturePrefixesFlag)
+	}
+	
+	// Only configure if at least one custom prefix is provided
+	if len(choreTypes) > 0 || len(fixTypes) > 0 || len(featureTypes) > 0 {
+		conventionalcommits.SetCustomPrefixes(choreTypes, fixTypes, featureTypes)
+	}
+}
+
+// parseCommaSeparatedPrefixes splits a comma-separated string and trims whitespace
+func parseCommaSeparatedPrefixes(input string) []string {
+	if input == "" {
+		return nil
+	}
+	
+	var result []string
+	for _, prefix := range strings.Split(input, ",") {
+		trimmed := strings.TrimSpace(prefix)
+		if trimmed != "" {
+			result = append(result, trimmed)
+		}
+	}
+	return result
 }
