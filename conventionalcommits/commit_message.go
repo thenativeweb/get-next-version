@@ -17,7 +17,7 @@ var (
 
 func initCommitMessage() {
 	typesRegexString := ""
-	for _, prefix := range allTypes {
+	for _, prefix := range defaultClassifier.GetAllTypes() {
 		typesRegexString += prefix + "|"
 	}
 	typesRegexString = strings.TrimSuffix(typesRegexString, "|")
@@ -58,6 +58,10 @@ func splitCommitMessage(message string) (body string, footers []string) {
 }
 
 func CommitMessageToType(message string) (Type, error) {
+	return CommitMessageToTypeWithClassifier(message, defaultClassifier)
+}
+
+func CommitMessageToTypeWithClassifier(message string, classifier *TypeClassifier) (Type, error) {
 	body, footers := splitCommitMessage(message)
 
 	var breakingFooterPrefixes []string
@@ -85,5 +89,5 @@ func CommitMessageToType(message string) (Type, error) {
 
 	typeIndex := util.MustFind(bodyRegex.SubexpNames(), "type")
 
-	return StringToType(parsedMessageBody[typeIndex])
+	return classifier.StringToType(parsedMessageBody[typeIndex])
 }

@@ -16,77 +16,93 @@ const (
 )
 
 var (
-	// Default prefix mappings
 	defaultChoreTypes   = []string{"build", "chore", "ci", "docs", "style", "refactor", "perf", "test"}
 	defaultFixTypes     = []string{"fix"}
 	defaultFeatureTypes = []string{"feat"}
-	
-	// Active prefix mappings (can be overridden)
-	choreTypes   = []string{"build", "chore", "ci", "docs", "style", "refactor", "perf", "test"}
-	fixTypes     = []string{"fix"}
-	featureTypes = []string{"feat"}
-	allTypes     []string
 )
 
-func initType() {
-	updateAllTypes()
+type TypeClassifier struct {
+	choreTypes   []string
+	fixTypes     []string
+	featureTypes []string
+	allTypes     []string
 }
 
-func updateAllTypes() {
-	allTypes = nil
-	for _, types := range [][]string{choreTypes, fixTypes, featureTypes} {
-		allTypes = append(allTypes, types...)
+func NewTypeClassifier() *TypeClassifier {
+	tc := &TypeClassifier{
+		choreTypes:   append([]string{}, defaultChoreTypes...),
+		fixTypes:     append([]string{}, defaultFixTypes...),
+		featureTypes: append([]string{}, defaultFeatureTypes...),
 	}
-	// Re-initialize commit message regex with updated types
-	initCommitMessage()
+	tc.updateAllTypes()
+	return tc
 }
 
-// SetCustomPrefixes allows overriding the default prefix mappings
-func SetCustomPrefixes(customChoreTypes, customFixTypes, customFeatureTypes []string) {
+func NewTypeClassifierWithCustomPrefixes(customChoreTypes, customFixTypes, customFeatureTypes []string) *TypeClassifier {
+	tc := &TypeClassifier{}
+	
 	if len(customChoreTypes) > 0 {
-		choreTypes = customChoreTypes
+		tc.choreTypes = customChoreTypes
 	} else {
-		choreTypes = append([]string{}, defaultChoreTypes...)
+		tc.choreTypes = append([]string{}, defaultChoreTypes...)
 	}
 	
 	if len(customFixTypes) > 0 {
-		fixTypes = customFixTypes
+		tc.fixTypes = customFixTypes
 	} else {
-		fixTypes = append([]string{}, defaultFixTypes...)
+		tc.fixTypes = append([]string{}, defaultFixTypes...)
 	}
 	
 	if len(customFeatureTypes) > 0 {
-		featureTypes = customFeatureTypes
+		tc.featureTypes = customFeatureTypes
 	} else {
-		featureTypes = append([]string{}, defaultFeatureTypes...)
+		tc.featureTypes = append([]string{}, defaultFeatureTypes...)
 	}
 	
-	updateAllTypes()
+	tc.updateAllTypes()
+	return tc
 }
 
-// ResetToDefaults resets all prefix mappings to their default values
-func ResetToDefaults() {
-	choreTypes = append([]string{}, defaultChoreTypes...)
-	fixTypes = append([]string{}, defaultFixTypes...)
-	featureTypes = append([]string{}, defaultFeatureTypes...)
-	updateAllTypes()
+func (tc *TypeClassifier) updateAllTypes() {
+	tc.allTypes = nil
+	for _, types := range [][]string{tc.choreTypes, tc.fixTypes, tc.featureTypes} {
+		tc.allTypes = append(tc.allTypes, types...)
+	}
 }
 
-func StringToType(s string) (Type, error) {
+func (tc *TypeClassifier) GetAllTypes() []string {
+	return tc.allTypes
+}
+
+func (tc *TypeClassifier) StringToType(s string) (Type, error) {
 	lowerS := strings.ToLower(s)
 	
-	// Check in order of precedence: Feature > Fix > Chore
-	if slices.Contains(featureTypes, lowerS) {
+	if slices.Contains(tc.featureTypes, lowerS) {
 		return Feature, nil
 	}
 
-	if slices.Contains(fixTypes, lowerS) {
+	if slices.Contains(tc.fixTypes, lowerS) {
 		return Fix, nil
 	}
 
-	if slices.Contains(choreTypes, lowerS) {
+	if slices.Contains(tc.choreTypes, lowerS) {
 		return Chore, nil
 	}
 
 	return Chore, errors.New("invalid string for conventional commit type")
+}
+
+var defaultClassifier = NewTypeClassifier()
+
+func StringToType(s string) (Type, error) {
+	return defaultClassifier.StringToType(s)
+}
+
+func SetCustomPrefixes(customChoreTypes, customFixTypes, customFeatureTypes []string) {
+	defaultClassifier = NewTypeClassifierWithCustomPrefixes(customChoreTypes, customFixTypes, customFeatureTypes)
+	initCommitMessage()
+}
+
+func initType() {
+	defaultClassifier = NewTypeClassifier()
 }

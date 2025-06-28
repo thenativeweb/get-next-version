@@ -34,10 +34,7 @@ func TestStringToType(t *testing.T) {
 	}
 }
 
-func TestSetCustomPrefixes(t *testing.T) {
-	// Reset to defaults before each test
-	conventionalcommits.ResetToDefaults()
-	
+func TestTypeClassifier(t *testing.T) {
 	tests := []struct {
 		name                 string
 		customChoreTypes     []string
@@ -57,7 +54,7 @@ func TestSetCustomPrefixes(t *testing.T) {
 		{
 			name:               "custom fix prefix perf moves from chore to fix", 
 			customFixTypes:     []string{"fix", "perf"},
-			customChoreTypes:   []string{"build", "chore", "ci", "docs", "style", "refactor", "test"}, // Remove perf from chore
+			customChoreTypes:   []string{"build", "chore", "ci", "docs", "style", "refactor", "test"},
 			testString:         "perf",
 			expectedType:       conventionalcommits.Fix,
 			doExpectError:      false,
@@ -80,7 +77,7 @@ func TestSetCustomPrefixes(t *testing.T) {
 			name:               "override defaults completely",
 			customFixTypes:     []string{"patch"},
 			customFeatureTypes: []string{"minor"},
-			testString:         "fix", // should now be invalid since we overrode
+			testString:         "fix",
 			expectedType:       conventionalcommits.Chore,
 			doExpectError:      true,
 		},
@@ -94,7 +91,6 @@ func TestSetCustomPrefixes(t *testing.T) {
 		{
 			name:               "precedence: fix takes precedence over chore when in both",
 			customFixTypes:     []string{"fix", "perf"},
-			// Don't modify chore types, so "perf" will be in both
 			testString:         "perf",
 			expectedType:       conventionalcommits.Fix,
 			doExpectError:      false,
@@ -111,14 +107,9 @@ func TestSetCustomPrefixes(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			// Reset before each subtest
-			conventionalcommits.ResetToDefaults()
+			classifier := conventionalcommits.NewTypeClassifierWithCustomPrefixes(test.customChoreTypes, test.customFixTypes, test.customFeatureTypes)
 			
-			// Set custom prefixes
-			conventionalcommits.SetCustomPrefixes(test.customChoreTypes, test.customFixTypes, test.customFeatureTypes)
-			
-			// Test the string conversion
-			commitType, err := conventionalcommits.StringToType(test.testString)
+			commitType, err := classifier.StringToType(test.testString)
 			
 			if test.doExpectError {
 				assert.Error(t, err)
@@ -130,23 +121,18 @@ func TestSetCustomPrefixes(t *testing.T) {
 	}
 }
 
-func TestResetToDefaults(t *testing.T) {
-	// Set custom prefixes
-	conventionalcommits.SetCustomPrefixes([]string{"custom"}, []string{"custom"}, []string{"custom"})
+func TestNewTypeClassifier(t *testing.T) {
+	classifier := conventionalcommits.NewTypeClassifier()
 	
-	// Reset to defaults
-	conventionalcommits.ResetToDefaults()
-	
-	// Test that default prefixes work again
-	commitType, err := conventionalcommits.StringToType("feat")
+	commitType, err := classifier.StringToType("feat")
 	assert.NoError(t, err)
 	assert.Equal(t, conventionalcommits.Feature, commitType)
 	
-	commitType, err = conventionalcommits.StringToType("fix")
+	commitType, err = classifier.StringToType("fix")
 	assert.NoError(t, err)
 	assert.Equal(t, conventionalcommits.Fix, commitType)
 	
-	commitType, err = conventionalcommits.StringToType("chore")
+	commitType, err = classifier.StringToType("chore")
 	assert.NoError(t, err)
 	assert.Equal(t, conventionalcommits.Chore, commitType)
 }
