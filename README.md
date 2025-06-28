@@ -148,15 +148,15 @@ When you specify custom prefixes, they completely replace the defaults for that 
 
 Note that `!` indicates breaking changes, and will always result in a new major version, independent of the type of change.
 
-## Multiple Granularity Tags
+## Handling multiple granularity tags
 
 `get-next-version` supports workflows where commits are tagged with multiple versions at different granularity levels. This is common in release processes where teams maintain pointers to the latest release at various levels of specificity.
 
-### Supported Patterns
+### Supporting patterns
 
 When a single commit has multiple compatible tags, `get-next-version` will automatically select the most specific version:
 
-```bash
+```sh
 # These patterns are supported and will select the most specific tag
 git tag v4
 git tag v4.5  
@@ -168,20 +168,20 @@ git tag v2.1
 # Result: 2.1.0 (most specific)
 ```
 
-### Compatibility Rules
+### Determining compatibility
 
 Tags are considered compatible granularities when they represent the same logical version at different levels of detail:
 
-- **Compatible**: `v4`, `v4.5`, `v4.5.14` (granular variations of version 4.5.14)
-- **Compatible**: `v3`, `v3.0`, `v3.0.2` (granular variations of version 3.0.2)  
-- **Not Compatible**: `v4.1.0`, `v4.2.0` (different minor versions)
-- **Not Compatible**: `v4.0.0`, `v5.0.0` (different major versions)
+- compatible: `v4`, `v4.5`, `v4.5.14` (granular variations of version 4.5.14)
+- compatible: `v3`, `v3.0`, `v3.0.2` (granular variations of version 3.0.2)  
+- not compatible: `v4.1.0`, `v4.2.0` (different minor versions)
+- not compatible: `v4.0.0`, `v5.0.0` (different major versions)
 
-### Error Cases
+### Handling errors
 
 `get-next-version` will return an error when a commit has multiple conflicting semantic versions rather than granularity variations:
 
-```bash
+```sh
 # This will cause an error
 git tag v4.1.0
 git tag v4.2.0

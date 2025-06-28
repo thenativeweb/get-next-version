@@ -54,25 +54,21 @@ func TestGetAllSemVerTags(t *testing.T) {
 			expectedTagNames: []string{},
 		},
 		{
-			// Test case for multiple granularity tags on same commit - should keep the most specific one
 			tagsPerBranch:    map[string][][]string{"main": {{"v4", "v4.5", "v4.5.14"}}},
 			doesExpectError:  false,
 			expectedTagNames: []string{"4.5.14"},
 		},
 		{
-			// Test case for different major versions on same commit - should still error
 			tagsPerBranch:    map[string][][]string{"main": {{"v4.0.0", "v5.0.0"}}},
 			doesExpectError:  true,
 			expectedTagNames: []string{},
 		},
 		{
-			// Test case for incompatible minor versions on same commit - should still error  
 			tagsPerBranch:    map[string][][]string{"main": {{"v4.1.0", "v4.2.0"}}},
 			doesExpectError:  true,
 			expectedTagNames: []string{},
 		},
 		{
-			// Test case for v prefix and no prefix mixed with granularities
 			tagsPerBranch:    map[string][][]string{"main": {{"4", "v4.5", "4.5.14"}}},
 			doesExpectError:  false,
 			expectedTagNames: []string{"4.5.14"},

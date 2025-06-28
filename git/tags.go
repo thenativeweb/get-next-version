@@ -11,13 +11,11 @@ import (
 
 type Tags = map[plumbing.Hash]*semver.Version
 
-// tagCandidate represents a potential semver tag for a commit.
 type tagCandidate struct {
 	originalName string
 	version      *semver.Version
 }
 
-// getTagSpecificity returns the number of version components in a tag.
 func getTagSpecificity(tagName string) int {
 	cleanTag := tagName
 	if strings.HasPrefix(cleanTag, "v") {
@@ -26,8 +24,6 @@ func getTagSpecificity(tagName string) int {
 	return strings.Count(cleanTag, ".")
 }
 
-// areCompatibleGranularities determines if two versions represent different granularity levels
-// of the same logical version rather than conflicting versions.
 func areCompatibleGranularities(leftVersion, rightVersion *semver.Version) bool {
 	if leftVersion.Equal(rightVersion) {
 		return true
@@ -53,7 +49,6 @@ func areCompatibleGranularities(leftVersion, rightVersion *semver.Version) bool 
 	return false
 }
 
-// selectMostSpecificTag selects the tag with the highest specificity (most version components).
 func selectMostSpecificTag(candidates []tagCandidate) *semver.Version {
 	if len(candidates) == 1 {
 		return candidates[0].version
@@ -73,13 +68,11 @@ func selectMostSpecificTag(candidates []tagCandidate) *semver.Version {
 	return mostSpecific.version
 }
 
-// GetAllSemVerTags extracts semantic version tags from a repository.
-//
-// Algorithm: When multiple tags exist on the same commit, this function distinguishes
-// between acceptable granularity variations (e.g., v4, v4.5, v4.5.14) and conflicting 
-// versions (e.g., v4.1.0, v4.2.0). For granularity variations, it selects the most
-// specific tag. For conflicting versions, it returns an error.
 func GetAllSemVerTags(repository *git.Repository) (Tags, error) {
+	// Algorithm: When multiple tags exist on the same commit, this function distinguishes
+	// between acceptable granularity variations (e.g., v4, v4.5, v4.5.14) and conflicting 
+	// versions (e.g., v4.1.0, v4.2.0). For granularity variations, it selects the most
+	// specific tag. For conflicting versions, it returns an error.
 	tagsIterator, err := repository.Tags()
 	if err != nil {
 		return Tags{}, err
@@ -105,7 +98,8 @@ func GetAllSemVerTags(repository *git.Repository) (Tags, error) {
 
 		version, err := semver.NewVersion(tag.Name().Short())
 		if err != nil {
-			return nil // Skip non-semver tags
+			// Skip non-semver tags
+			return nil
 		}
 
 		commitTags[commitHash] = append(commitTags[commitHash], tagCandidate{
