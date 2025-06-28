@@ -52,8 +52,7 @@ var RootCommand = &cobra.Command{
 			log.Fatal().Msg("invalid target")
 		}
 
-		// Configure custom prefixes if provided
-		configureCustomPrefixes()
+		classifier := createTypeClassifier()
 
 		repository, err := gogit.PlainOpen(rootRepositoryFlag)
 		if err != nil {
@@ -62,7 +61,7 @@ var RootCommand = &cobra.Command{
 
 		var nextVersion semver.Version
 		var hasNextVersion bool
-		result, err := git.GetConventionalCommitTypesSinceLastRelease(repository)
+		result, err := git.GetConventionalCommitTypesSinceLastRelease(repository, classifier)
 		if err != nil {
 			log.Fatal().Msg(err.Error())
 		} else {
@@ -76,7 +75,7 @@ var RootCommand = &cobra.Command{
 	},
 }
 
-func configureCustomPrefixes() {
+func createTypeClassifier() *conventionalcommits.TypeClassifier {
 	var choreTypes, fixTypes, featureTypes []string
 	
 	if rootChorePrefixesFlag != "" {
@@ -91,9 +90,7 @@ func configureCustomPrefixes() {
 		featureTypes = parseCommaSeparatedPrefixes(rootFeaturePrefixesFlag)
 	}
 	
-	if len(choreTypes) > 0 || len(fixTypes) > 0 || len(featureTypes) > 0 {
-		conventionalcommits.SetCustomPrefixes(choreTypes, fixTypes, featureTypes)
-	}
+	return conventionalcommits.NewTypeClassifierWithCustomPrefixes(choreTypes, fixTypes, featureTypes)
 }
 
 func parseCommaSeparatedPrefixes(input string) []string {

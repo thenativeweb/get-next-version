@@ -25,17 +25,14 @@ type TypeClassifier struct {
 	choreTypes   []string
 	fixTypes     []string
 	featureTypes []string
-	allTypes     []string
 }
 
 func NewTypeClassifier() *TypeClassifier {
-	tc := &TypeClassifier{
+	return &TypeClassifier{
 		choreTypes:   append([]string{}, defaultChoreTypes...),
 		fixTypes:     append([]string{}, defaultFixTypes...),
 		featureTypes: append([]string{}, defaultFeatureTypes...),
 	}
-	tc.updateAllTypes()
-	return tc
 }
 
 func NewTypeClassifierWithCustomPrefixes(customChoreTypes, customFixTypes, customFeatureTypes []string) *TypeClassifier {
@@ -59,19 +56,15 @@ func NewTypeClassifierWithCustomPrefixes(customChoreTypes, customFixTypes, custo
 		tc.featureTypes = append([]string{}, defaultFeatureTypes...)
 	}
 	
-	tc.updateAllTypes()
 	return tc
 }
 
-func (tc *TypeClassifier) updateAllTypes() {
-	tc.allTypes = nil
-	for _, types := range [][]string{tc.choreTypes, tc.fixTypes, tc.featureTypes} {
-		tc.allTypes = append(tc.allTypes, types...)
-	}
-}
-
 func (tc *TypeClassifier) GetAllTypes() []string {
-	return tc.allTypes
+	var allTypes []string
+	for _, types := range [][]string{tc.choreTypes, tc.fixTypes, tc.featureTypes} {
+		allTypes = append(allTypes, types...)
+	}
+	return allTypes
 }
 
 func (tc *TypeClassifier) StringToType(s string) (Type, error) {
@@ -92,17 +85,4 @@ func (tc *TypeClassifier) StringToType(s string) (Type, error) {
 	return Chore, errors.New("invalid string for conventional commit type")
 }
 
-var defaultClassifier = NewTypeClassifier()
 
-func StringToType(s string) (Type, error) {
-	return defaultClassifier.StringToType(s)
-}
-
-func SetCustomPrefixes(customChoreTypes, customFixTypes, customFeatureTypes []string) {
-	defaultClassifier = NewTypeClassifierWithCustomPrefixes(customChoreTypes, customFixTypes, customFeatureTypes)
-	initCommitMessage()
-}
-
-func initType() {
-	defaultClassifier = NewTypeClassifier()
-}

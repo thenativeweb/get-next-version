@@ -8,6 +8,8 @@ import (
 )
 
 func TestCommitMessageToType(t *testing.T) {
+	classifier := conventionalcommits.NewTypeClassifier()
+	
 	tests := []struct {
 		message            string
 		doExpectError      bool
@@ -32,7 +34,7 @@ func TestCommitMessageToType(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		commitType, err := conventionalcommits.CommitMessageToType(test.message)
+		commitType, err := conventionalcommits.CommitMessageToTypeWithClassifier(test.message, classifier)
 
 		if test.doExpectError {
 			assert.Error(t, err)

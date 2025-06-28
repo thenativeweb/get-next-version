@@ -150,7 +150,8 @@ func TestGetConventionalCommitTypesSinceLatestRelease(t *testing.T) {
 			require.NoError(t, err)
 		}
 
-		actual, err := git.GetConventionalCommitTypesSinceLastRelease(repository)
+		classifier := conventionalcommits.NewTypeClassifier()
+		actual, err := git.GetConventionalCommitTypesSinceLastRelease(repository, classifier)
 
 		if test.doExpectError {
 			assert.Error(t, err)

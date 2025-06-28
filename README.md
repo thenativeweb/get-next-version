@@ -106,17 +106,17 @@ Some examples for commit messages are shown below:
 
 By default, `get-next-version` uses the following commit prefixes:
 
-- **Feature prefixes** (minor version bump): `feat`
-- **Fix prefixes** (patch version bump): `fix`
-- **Chore prefixes** (no version bump): `build`, `chore`, `ci`, `docs`, `style`, `refactor`, `perf`, `test`
+- Feature prefixes (minor version bump): `feat`
+- Fix prefixes (patch version bump): `fix`
+- Chore prefixes (no version bump): `build`, `chore`, `ci`, `docs`, `style`, `refactor`, `perf`, `test`
 
 You can customize these prefixes to match your project's conventions using CLI flags or GitHub Action inputs.
 
-### CLI usage
+### Using CLI
 
 Use comma-separated values for custom prefixes:
 
-```bash
+```sh
 # Add 'deps' and 'perf' as fix prefixes (patch version bump)
 get-next-version --fix-prefixes "fix,deps,perf"
 
@@ -130,7 +130,7 @@ get-next-version --chore-prefixes "chore,docs,style"
 get-next-version --fix-prefixes "fix,deps" --feature-prefixes "feat,enhance"
 ```
 
-### GitHub Action usage
+### Using GitHub Action
 
 When using the GitHub Action, specify custom prefixes as inputs:
 
@@ -144,22 +144,6 @@ When using the GitHub Action, specify custom prefixes as inputs:
     chore_prefixes: 'chore,docs,style'
 ```
 
-### Examples
+When you specify custom prefixes, they completely replace the defaults for that category. If you want to keep the defaults and add new ones, include them explicitly in your custom list.
 
-With custom prefixes configured, these commit messages would result in version bumps:
-
-```bash
-# Using default prefixes
-git commit -m "fix: resolve memory leak"        # → patch bump
-git commit -m "feat: add user authentication"   # → minor bump
-git commit -m "perf: optimize database query"   # → no bump (chore)
-
-# Using custom fix prefixes: "fix,deps,perf"  
-git commit -m "fix: resolve memory leak"        # → patch bump
-git commit -m "deps: update dependencies"       # → patch bump
-git commit -m "perf: optimize database query"   # → patch bump
-```
-
-**Note:** When you specify custom prefixes, they completely replace the defaults for that category. If you want to keep the defaults and add new ones, include them explicitly in your custom list.
-
-Please note that `!` indicates breaking changes, and will always result in a new major version, independent of the type of change.
+Note that `!` indicates breaking changes, and will always result in a new major version, independent of the type of change.

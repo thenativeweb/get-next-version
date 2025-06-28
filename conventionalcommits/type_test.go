@@ -8,6 +8,8 @@ import (
 )
 
 func TestStringToType(t *testing.T) {
+	classifier := conventionalcommits.NewTypeClassifier()
+	
 	tests := []struct {
 		string        string
 		doExpectError bool
@@ -22,7 +24,7 @@ func TestStringToType(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		commitType, err := conventionalcommits.StringToType(test.string)
+		commitType, err := classifier.StringToType(test.string)
 
 		if test.doExpectError {
 			assert.Error(t, err)
