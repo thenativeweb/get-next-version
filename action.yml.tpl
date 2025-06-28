@@ -7,6 +7,18 @@ inputs:
     description: 'Sets the version prefix'
     required: false
     default: ''
+  feature_prefixes:
+    description: 'Sets custom feature prefixes (comma-separated)'
+    required: false
+    default: ''
+  fix_prefixes:
+    description: 'Sets custom fix prefixes (comma-separated)'
+    required: false
+    default: ''
+  chore_prefixes:
+    description: 'Sets custom chore prefixes (comma-separated)'
+    required: false
+    default: ''
 outputs:
   version:
     description: 'Next version'

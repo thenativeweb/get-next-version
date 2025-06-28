@@ -10,14 +10,13 @@ import (
 )
 
 var (
-	bodyRegex             *regexp.Regexp
 	breakingFooterTokens  = []string{"BREAKING CHANGE", "BREAKING-CHANGE"}
 	footerTokenSeparators = []string{": ", " #"}
 )
 
-func initCommitMessage() {
+func createBodyRegex(classifier *TypeClassifier) *regexp.Regexp {
 	typesRegexString := ""
-	for _, prefix := range allTypes {
+	for _, prefix := range classifier.GetAllTypes() {
 		typesRegexString += prefix + "|"
 	}
 	typesRegexString = strings.TrimSuffix(typesRegexString, "|")
@@ -26,7 +25,7 @@ func initCommitMessage() {
 		typesRegexString,
 	)
 
-	bodyRegex = regexp.MustCompile(conventionalCommitBodyRegexString)
+	return regexp.MustCompile(conventionalCommitBodyRegexString)
 }
 
 func splitCommitMessage(message string) (body string, footers []string) {
@@ -57,7 +56,7 @@ func splitCommitMessage(message string) (body string, footers []string) {
 	return body, footers
 }
 
-func CommitMessageToType(message string) (Type, error) {
+func CommitMessageToTypeWithClassifier(message string, classifier *TypeClassifier) (Type, error) {
 	body, footers := splitCommitMessage(message)
 
 	var breakingFooterPrefixes []string
@@ -72,6 +71,7 @@ func CommitMessageToType(message string) (Type, error) {
 		}
 	}
 
+	bodyRegex := createBodyRegex(classifier)
 	parsedMessageBody := bodyRegex.FindStringSubmatch(body)
 	if parsedMessageBody == nil {
 		return Chore, errors.New("invalid message body for conventional commit message")
@@ -85,5 +85,5 @@ func CommitMessageToType(message string) (Type, error) {
 
 	typeIndex := util.MustFind(bodyRegex.SubexpNames(), "type")
 
-	return StringToType(parsedMessageBody[typeIndex])
+	return classifier.StringToType(parsedMessageBody[typeIndex])
 }

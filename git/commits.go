@@ -17,7 +17,7 @@ type ConventionalCommitTypesResult struct {
 
 var ErrNoCommitsFound = errors.New("no commits found")
 
-func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (ConventionalCommitTypesResult, error) {
+func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository, classifier *conventionalcommits.TypeClassifier) (ConventionalCommitTypesResult, error) {
 	tags, err := GetAllSemVerTags(repository)
 	if err != nil {
 		return ConventionalCommitTypesResult{}, err
@@ -47,7 +47,7 @@ func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository) (Con
 			break
 		}
 
-		currentCommitType, err := conventionalcommits.CommitMessageToType(currentCommit.Message)
+		currentCommitType, err := conventionalcommits.CommitMessageToTypeWithClassifier(currentCommit.Message, classifier)
 		if err != nil {
 			currentCommitType = conventionalcommits.Chore
 		}

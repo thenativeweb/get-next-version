@@ -76,6 +76,10 @@ jobs:
       uses: thenativeweb/get-next-version@main
       with:
         prefix: 'v' # optional, defaults to ''
+        # Optional: customize commit prefixes
+        # fix_prefixes: 'fix,deps,perf'
+        # feature_prefixes: 'feat,enhance'  
+        # chore_prefixes: 'chore,docs,style'
     - name: Show the next version
       run: |
         echo ${{ steps.get_next_version.outputs.version }}
@@ -98,4 +102,48 @@ Some examples for commit messages are shown below:
 - `feat: Add support for Node.js 18`
 - `feat!: Change API from v1 to v2`
 
-Please note that `!` indicates breaking changes, and will always result in a new major version, independent of the type of change.
+## Customizing commit prefixes
+
+By default, `get-next-version` uses the following commit prefixes:
+
+- Feature prefixes (minor version bump): `feat`
+- Fix prefixes (patch version bump): `fix`
+- Chore prefixes (no version bump): `build`, `chore`, `ci`, `docs`, `style`, `refactor`, `perf`, `test`
+
+You can customize these prefixes to match your project's conventions using CLI flags or GitHub Action inputs.
+
+### Using CLI
+
+Use comma-separated values for custom prefixes:
+
+```sh
+# Add 'deps' and 'perf' as fix prefixes (patch version bump)
+get-next-version --fix-prefixes "fix,deps,perf"
+
+# Add 'enhance' as a feature prefix (minor version bump)  
+get-next-version --feature-prefixes "feat,enhance"
+
+# Customize chore prefixes (no version bump)
+get-next-version --chore-prefixes "chore,docs,style"
+
+# Combine multiple custom prefixes
+get-next-version --fix-prefixes "fix,deps" --feature-prefixes "feat,enhance"
+```
+
+### Using GitHub Action
+
+When using the GitHub Action, specify custom prefixes as inputs:
+
+```yaml
+- name: Get next version
+  id: get_next_version
+  uses: thenativeweb/get-next-version@main
+  with:
+    fix_prefixes: 'fix,deps,perf'
+    feature_prefixes: 'feat,enhance'
+    chore_prefixes: 'chore,docs,style'
+```
+
+When you specify custom prefixes, they completely replace the defaults for that category. If you want to keep the defaults and add new ones, include them explicitly in your custom list.
+
+Note that `!` indicates breaking changes, and will always result in a new major version, independent of the type of change.
