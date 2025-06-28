@@ -11,16 +11,14 @@ import (
 
 type Tags = map[plumbing.Hash]*semver.Version
 
-// tagCandidate holds a tag candidate with its original name and parsed version
+// tagCandidate represents a potential semver tag for a commit.
 type tagCandidate struct {
 	originalName string
 	version      *semver.Version
 }
 
-// getTagSpecificity returns how specific a tag is based on the number of version components.
-// More dots means more specific: "v4" (0 dots) < "v4.5" (1 dot) < "v4.5.14" (2 dots)
+// getTagSpecificity returns the number of version components in a tag.
 func getTagSpecificity(tagName string) int {
-	// Remove 'v' prefix if present
 	cleanTag := tagName
 	if strings.HasPrefix(cleanTag, "v") {
 		cleanTag = cleanTag[1:]
@@ -28,44 +26,34 @@ func getTagSpecificity(tagName string) int {
 	return strings.Count(cleanTag, ".")
 }
 
-// areCompatibleGranularities checks if two versions are compatible granularities of the same version.
-// For example, v4.0.0, v4.5.0, and v4.5.14 are compatible if they represent granularities like v4, v4.5, v4.5.14
-func areCompatibleGranularities(v1, v2 *semver.Version) bool {
-	// If both versions are identical, they're definitely compatible
-	if v1.Equal(v2) {
+// areCompatibleGranularities determines if two versions represent different granularity levels
+// of the same logical version rather than conflicting versions.
+func areCompatibleGranularities(leftVersion, rightVersion *semver.Version) bool {
+	if leftVersion.Equal(rightVersion) {
 		return true
 	}
 	
-	// Check if one could be a less specific version of the other
-	// v4.0.0 is compatible with v4.5.14 (v4 vs v4.5.14)
-	// v4.5.0 is compatible with v4.5.14 (v4.5 vs v4.5.14)
-	// v4.0.0 is NOT compatible with v5.0.0 (different major)
-	// v4.1.0 is NOT compatible with v4.2.14 (different minor, both explicit)
-	
-	if v1.Major() != v2.Major() {
+	if leftVersion.Major() != rightVersion.Major() {
 		return false
 	}
 	
-	// If one has minor = 0 and patch = 0, it could be a "major only" tag like "v4"
-	if (v1.Minor() == 0 && v1.Patch() == 0) || (v2.Minor() == 0 && v2.Patch() == 0) {
+	// Allow major-only tags (e.g., "v4" represented as v4.0.0) 
+	if (leftVersion.Minor() == 0 && leftVersion.Patch() == 0) || (rightVersion.Minor() == 0 && rightVersion.Patch() == 0) {
 		return true
 	}
 	
-	// If they have the same major and minor, check patch
-	if v1.Minor() == v2.Minor() {
-		// If one has patch = 0, it could be a "major.minor" tag like "v4.5"
-		if v1.Patch() == 0 || v2.Patch() == 0 {
+	if leftVersion.Minor() == rightVersion.Minor() {
+		// Allow major.minor tags (e.g., "v4.5" represented as v4.5.0)
+		if leftVersion.Patch() == 0 || rightVersion.Patch() == 0 {
 			return true
 		}
-		// If both have explicit patch versions, they should be the same
-		return v1.Patch() == v2.Patch()
+		return leftVersion.Patch() == rightVersion.Patch()
 	}
 	
-	// Different minor versions with explicit values are not compatible
 	return false
 }
 
-// selectMostSpecificTag selects the most specific tag from a list of candidates
+// selectMostSpecificTag selects the tag with the highest specificity (most version components).
 func selectMostSpecificTag(candidates []tagCandidate) *semver.Version {
 	if len(candidates) == 1 {
 		return candidates[0].version
@@ -85,13 +73,18 @@ func selectMostSpecificTag(candidates []tagCandidate) *semver.Version {
 	return mostSpecific.version
 }
 
+// GetAllSemVerTags extracts semantic version tags from a repository.
+//
+// Algorithm: When multiple tags exist on the same commit, this function distinguishes
+// between acceptable granularity variations (e.g., v4, v4.5, v4.5.14) and conflicting 
+// versions (e.g., v4.1.0, v4.2.0). For granularity variations, it selects the most
+// specific tag. For conflicting versions, it returns an error.
 func GetAllSemVerTags(repository *git.Repository) (Tags, error) {
 	tagsIterator, err := repository.Tags()
 	if err != nil {
 		return Tags{}, err
 	}
 
-	// First pass: collect all tag candidates for each commit
 	var commitTags = make(map[plumbing.Hash][]tagCandidate)
 
 	err = tagsIterator.ForEach(func(tag *plumbing.Reference) error {
@@ -115,7 +108,6 @@ func GetAllSemVerTags(repository *git.Repository) (Tags, error) {
 			return nil // Skip non-semver tags
 		}
 
-		// Add this tag as a candidate for this commit
 		commitTags[commitHash] = append(commitTags[commitHash], tagCandidate{
 			originalName: tag.Name().Short(),
 			version:      version,
@@ -126,18 +118,13 @@ func GetAllSemVerTags(repository *git.Repository) (Tags, error) {
 		return Tags{}, err
 	}
 
-	// Second pass: select the most specific tag for each commit
 	var tags = make(Tags)
 	for commitHash, candidates := range commitTags {
 		if len(candidates) > 1 {
-			// Check if this is the problematic case where we have multiple different semver versions
-			// vs. the acceptable case where we have multiple granularity tags for the same version
 			firstVersion := candidates[0].version
 			hasDifferentVersions := false
 			
 			for _, candidate := range candidates[1:] {
-				// If the major, minor, patch don't match in a way that suggests they're different versions
-				// (not just different granularities of the same version), then it's an error
 				if !areCompatibleGranularities(firstVersion, candidate.version) {
 					hasDifferentVersions = true
 					break

@@ -147,3 +147,45 @@ When using the GitHub Action, specify custom prefixes as inputs:
 When you specify custom prefixes, they completely replace the defaults for that category. If you want to keep the defaults and add new ones, include them explicitly in your custom list.
 
 Note that `!` indicates breaking changes, and will always result in a new major version, independent of the type of change.
+
+## Multiple Granularity Tags
+
+`get-next-version` supports workflows where commits are tagged with multiple versions at different granularity levels. This is common in release processes where teams maintain pointers to the latest release at various levels of specificity.
+
+### Supported Patterns
+
+When a single commit has multiple compatible tags, `get-next-version` will automatically select the most specific version:
+
+```bash
+# These patterns are supported and will select the most specific tag
+git tag v4
+git tag v4.5  
+git tag v4.5.14
+# Result: 4.5.14 (most specific)
+
+git tag v2
+git tag v2.1
+# Result: 2.1.0 (most specific)
+```
+
+### Compatibility Rules
+
+Tags are considered compatible granularities when they represent the same logical version at different levels of detail:
+
+- **Compatible**: `v4`, `v4.5`, `v4.5.14` (granular variations of version 4.5.14)
+- **Compatible**: `v3`, `v3.0`, `v3.0.2` (granular variations of version 3.0.2)  
+- **Not Compatible**: `v4.1.0`, `v4.2.0` (different minor versions)
+- **Not Compatible**: `v4.0.0`, `v5.0.0` (different major versions)
+
+### Error Cases
+
+`get-next-version` will return an error when a commit has multiple conflicting semantic versions rather than granularity variations:
+
+```bash
+# This will cause an error
+git tag v4.1.0
+git tag v4.2.0
+# Error: commit abc123 was tagged with multiple semver versions
+```
+
+This behavior ensures that genuine version conflicts are caught while allowing flexible tagging strategies that use granularity pointers.
