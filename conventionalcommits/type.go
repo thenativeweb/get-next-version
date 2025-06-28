@@ -84,5 +84,3 @@ func (tc *TypeClassifier) StringToType(s string) (Type, error) {
 
 	return Chore, errors.New("invalid string for conventional commit type")
 }
-
-
