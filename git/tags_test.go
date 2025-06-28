@@ -53,6 +53,26 @@ func TestGetAllSemVerTags(t *testing.T) {
 			doesExpectError:  true,
 			expectedTagNames: []string{},
 		},
+		{
+			tagsPerBranch:    map[string][][]string{"main": {{"v4", "v4.5", "v4.5.14"}}},
+			doesExpectError:  false,
+			expectedTagNames: []string{"4.5.14"},
+		},
+		{
+			tagsPerBranch:    map[string][][]string{"main": {{"v4.0.0", "v5.0.0"}}},
+			doesExpectError:  true,
+			expectedTagNames: []string{},
+		},
+		{
+			tagsPerBranch:    map[string][][]string{"main": {{"v4.1.0", "v4.2.0"}}},
+			doesExpectError:  true,
+			expectedTagNames: []string{},
+		},
+		{
+			tagsPerBranch:    map[string][][]string{"main": {{"4", "v4.5", "4.5.14"}}},
+			doesExpectError:  false,
+			expectedTagNames: []string{"4.5.14"},
+		},
 	}
 
 	for _, test := range tests {
