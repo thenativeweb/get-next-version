@@ -76,7 +76,6 @@ var RootCommand = &cobra.Command{
 	},
 }
 
-// configureCustomPrefixes parses and sets custom prefixes if provided
 func configureCustomPrefixes() {
 	var choreTypes, fixTypes, featureTypes []string
 	
@@ -92,13 +91,11 @@ func configureCustomPrefixes() {
 		featureTypes = parseCommaSeparatedPrefixes(rootFeaturePrefixesFlag)
 	}
 	
-	// Only configure if at least one custom prefix is provided
 	if len(choreTypes) > 0 || len(fixTypes) > 0 || len(featureTypes) > 0 {
 		conventionalcommits.SetCustomPrefixes(choreTypes, fixTypes, featureTypes)
 	}
 }
 
-// parseCommaSeparatedPrefixes splits a comma-separated string and trims whitespace
 func parseCommaSeparatedPrefixes(input string) []string {
 	if input == "" {
 		return nil
