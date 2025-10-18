@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-set -e
+#set -e
 
 echo getting version in "$REPOSITORY_PATH"
 
