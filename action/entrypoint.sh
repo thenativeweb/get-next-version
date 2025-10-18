@@ -2,6 +2,8 @@
 
 set -e
 
+echo getting version in "$REPOSITORY_PATH"
+
 /action/get-next-version \
   --repository "$REPOSITORY_PATH" \
   --target github-action \
