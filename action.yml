@@ -19,6 +19,10 @@ inputs:
     description: 'Sets custom chore prefixes (comma-separated)'
     required: false
     default: ''
+  repository_path:
+    description: 'Path to the directory the repository is in'
+    required: false
+    default: '/github/workspace'
 outputs:
   version:
     description: 'Next version'

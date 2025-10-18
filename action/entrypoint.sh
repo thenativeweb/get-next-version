@@ -3,7 +3,7 @@
 set -e
 
 /action/get-next-version \
-  --repository /github/workspace \
+  --repository "$REPOSITORY_PATH" \
   --target github-action \
   --prefix "$INPUT_PREFIX" \
   --feature-prefixes "$INPUT_FEATURE_PREFIXES" \
