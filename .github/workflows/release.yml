@@ -43,7 +43,7 @@ jobs:
         cat ./action.yml.tpl | sed "s/<docker-image>/docker:\/\/ghcr.io\/thenativeweb\/get-next-version:${{ steps.get_next_version.outputs.version }}/" > ./action.yml
     - name: Create release commit
       if: ${{ steps.get_next_version.outputs.hasNextVersion == 'true' }}
-      uses: EndBug/add-and-commit@v9
+      uses: EndBug/add-and-commit@v10
       with:
         add: ./action.yml
         message: "chore(release): Version ${{ steps.get_next_version.outputs.version }} [skip ci]"
