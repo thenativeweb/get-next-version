@@ -1,6 +1,6 @@
 module github.com/thenativeweb/get-next-version
 
-go 1.25.0
+go 1.26.0
 
 require (
 	github.com/Masterminds/semver v1.5.0
