@@ -9,7 +9,7 @@ jobs:
 
     steps:
     - name: Clone repository
-      uses: actions/checkout@v7.0.0
+      uses: actions/checkout@v7.0.1
     - name: Use Go
       uses: actions/setup-go@v6.5.0
       with:
