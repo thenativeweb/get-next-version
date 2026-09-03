@@ -1,11 +1,10 @@
 package cli
 
 import (
+	"fmt"
 	"strings"
-	
-	"github.com/Masterminds/semver"
+
 	gogit "github.com/go-git/go-git/v5"
-	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/thenativeweb/get-next-version/conventionalcommits"
 	"github.com/thenativeweb/get-next-version/git"
@@ -37,7 +36,11 @@ var RootCommand = &cobra.Command{
 	Use:   "get-next-version",
 	Short: "Get the next version according for semantic versioning",
 	Long:  "Get the next version according for semantic versioning.",
-	Run: func(_ *cobra.Command, _ []string) {
+	RunE: func(command *cobra.Command, _ []string) error {
+		// From here on, errors are caused by the repository or the environment,
+		// not by incorrect usage, so printing the usage would only add noise.
+		command.SilenceUsage = true
+
 		validTargets := []string{
 			"github-action",
 			"json",
@@ -45,51 +48,50 @@ var RootCommand = &cobra.Command{
 		}
 
 		if isValid, prefixValidationError := util.IsValidVersionPrefix(rootPrefixFlag); !isValid {
-			log.Fatal().Msgf("invalid version prefix %+q", prefixValidationError)
+			return fmt.Errorf("invalid version prefix %+q", prefixValidationError)
 		}
 
 		if !slices.Contains(validTargets, rootTargetFlag) {
-			log.Fatal().Msg("invalid target")
+			return fmt.Errorf("invalid target %q, must be one of %s", rootTargetFlag, strings.Join(validTargets, ", "))
 		}
 
 		classifier := createTypeClassifier()
 
 		repository, err := gogit.PlainOpen(rootRepositoryFlag)
 		if err != nil {
-			log.Fatal().Msg(err.Error())
+			return fmt.Errorf("could not open repository: %w", err)
 		}
 
-		var nextVersion semver.Version
-		var hasNextVersion bool
 		result, err := git.GetConventionalCommitTypesSinceLastRelease(repository, classifier)
 		if err != nil {
-			log.Fatal().Msg(err.Error())
-		} else {
-			nextVersion, hasNextVersion = versioning.CalculateNextVersion(result.LatestReleaseVersion, result.ConventionalCommitTypes)
+			return err
 		}
 
-		err = target.WriteOutput(nextVersion, hasNextVersion, rootTargetFlag, rootPrefixFlag)
-		if err != nil {
-			log.Fatal().Err(err).Msg("could not write output")
+		nextVersion, hasNextVersion := versioning.CalculateNextVersion(result.LatestReleaseVersion, result.ConventionalCommitTypes)
+
+		if err := target.WriteOutput(nextVersion, hasNextVersion, rootTargetFlag, rootPrefixFlag); err != nil {
+			return fmt.Errorf("could not write output: %w", err)
 		}
+
+		return nil
 	},
 }
 
 func createTypeClassifier() *conventionalcommits.TypeClassifier {
 	var choreTypes, fixTypes, featureTypes []string
-	
+
 	if rootChorePrefixesFlag != "" {
 		choreTypes = parseCommaSeparatedPrefixes(rootChorePrefixesFlag)
 	}
-	
+
 	if rootFixPrefixesFlag != "" {
 		fixTypes = parseCommaSeparatedPrefixes(rootFixPrefixesFlag)
 	}
-	
+
 	if rootFeaturePrefixesFlag != "" {
 		featureTypes = parseCommaSeparatedPrefixes(rootFeaturePrefixesFlag)
 	}
-	
+
 	return conventionalcommits.NewTypeClassifierWithCustomPrefixes(choreTypes, fixTypes, featureTypes)
 }
 
@@ -97,7 +99,7 @@ func parseCommaSeparatedPrefixes(input string) []string {
 	if input == "" {
 		return nil
 	}
-	
+
 	var result []string
 	for _, prefix := range strings.Split(input, ",") {
 		trimmed := strings.TrimSpace(prefix)
@@ -105,5 +107,6 @@ func parseCommaSeparatedPrefixes(input string) []string {
 			result = append(result, trimmed)
 		}
 	}
+
 	return result
 }

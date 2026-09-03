@@ -17,6 +17,11 @@ type ConventionalCommitTypesResult struct {
 
 var ErrNoCommitsFound = errors.New("no commits found")
 
+var ErrShallowRepository = errors.New(
+	"repository is a shallow clone and does not contain enough history; " +
+		"run `git fetch --unshallow`, or set `fetch-depth: 0` if you are using actions/checkout",
+)
+
 func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository, classifier *conventionalcommits.TypeClassifier) (ConventionalCommitTypesResult, error) {
 	tags, err := GetAllSemVerTags(repository)
 	if err != nil {
@@ -56,6 +61,13 @@ func GetConventionalCommitTypesSinceLastRelease(repository *git.Repository, clas
 			currentCommitType,
 		)
 		currentCommit, currentCommitErr = commitIterator.Next()
+	}
+
+	if latestReleaseVersion == nil {
+		isShallow, shallowErr := IsShallow(repository)
+		if shallowErr == nil && isShallow {
+			return ConventionalCommitTypesResult{}, ErrShallowRepository
+		}
 	}
 
 	if currentCommitErr != nil {

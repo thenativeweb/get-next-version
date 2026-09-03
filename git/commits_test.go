@@ -5,6 +5,8 @@ import (
 
 	"github.com/Masterminds/semver"
 	gogit "github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/thenativeweb/get-next-version/conventionalcommits"
@@ -167,4 +169,86 @@ func TestGetConventionalCommitTypesSinceLatestRelease(t *testing.T) {
 		assert.True(t, test.expectedLastVersion.Equal(actual.LatestReleaseVersion))
 		assert.ElementsMatch(t, test.expectedConventionalCommitTypes, actual.ConventionalCommitTypes)
 	}
+}
+
+func TestGetConventionalCommitTypesSinceLatestReleaseInShallowRepository(t *testing.T) {
+	setUpShallowRepository := func(t *testing.T, commitHistory []commit) *gogit.Repository {
+		repository, err := testutil.SetUpInMemoryRepository()
+		require.NoError(t, err)
+
+		worktree, err := repository.Worktree()
+		require.NoError(t, err)
+
+		for _, currentCommit := range commitHistory {
+			_, err := worktree.Commit(currentCommit.message, testutil.CreateCommitOptions())
+			require.NoError(t, err)
+
+			if currentCommit.tag == "" {
+				continue
+			}
+
+			head, err := repository.Head()
+			require.NoError(t, err)
+
+			_, err = repository.CreateTag(currentCommit.tag, head.Hash(), nil)
+			require.NoError(t, err)
+		}
+
+		// Simulate the truncated history of a shallow clone by marking the
+		// oldest known commit as a shallow boundary.
+		commits, err := repository.Log(&gogit.LogOptions{Order: gogit.LogOrderCommitterTime})
+		require.NoError(t, err)
+
+		var oldestCommitHash plumbing.Hash
+		require.NoError(t, commits.ForEach(func(currentCommit *object.Commit) error {
+			oldestCommitHash = currentCommit.Hash
+			return nil
+		}))
+
+		require.NoError(t, repository.Storer.SetShallow([]plumbing.Hash{oldestCommitHash}))
+
+		return repository
+	}
+
+	classifier := conventionalcommits.NewTypeClassifier()
+
+	t.Run("returns an error if no release tag is within the truncated history", func(t *testing.T) {
+		repository := setUpShallowRepository(t, []commit{
+			{message: "chore: Do something", tag: ""},
+			{message: "feat: Do something else", tag: ""},
+		})
+
+		_, err := git.GetConventionalCommitTypesSinceLastRelease(repository, classifier)
+
+		assert.ErrorIs(t, err, git.ErrShallowRepository)
+	})
+
+	t.Run("returns the result if a release tag is within the truncated history", func(t *testing.T) {
+		repository := setUpShallowRepository(t, []commit{
+			{message: "chore: Last release", tag: "1.0.0"},
+			{message: "feat: Do something", tag: ""},
+		})
+
+		actual, err := git.GetConventionalCommitTypesSinceLastRelease(repository, classifier)
+
+		require.NoError(t, err)
+		assert.True(t, semver.MustParse("1.0.0").Equal(actual.LatestReleaseVersion))
+		assert.ElementsMatch(t, []conventionalcommits.Type{conventionalcommits.Feature}, actual.ConventionalCommitTypes)
+	})
+
+	t.Run("does not report a complete repository without any release tags as shallow", func(t *testing.T) {
+		repository, err := testutil.SetUpInMemoryRepository()
+		require.NoError(t, err)
+
+		worktree, err := repository.Worktree()
+		require.NoError(t, err)
+
+		_, err = worktree.Commit("feat: Do something", testutil.CreateCommitOptions())
+		require.NoError(t, err)
+
+		actual, err := git.GetConventionalCommitTypesSinceLastRelease(repository, classifier)
+
+		require.NoError(t, err)
+		assert.True(t, semver.MustParse("0.0.0").Equal(actual.LatestReleaseVersion))
+	})
 }
