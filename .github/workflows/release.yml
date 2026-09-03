@@ -43,7 +43,7 @@ jobs:
         cat ./action.yml.tpl | sed "s/<docker-image>/docker:\/\/ghcr.io\/thenativeweb\/get-next-version:${{ steps.get_next_version.outputs.version }}/" > ./action.yml
     - name: Create release commit
       if: ${{ steps.get_next_version.outputs.hasNextVersion == 'true' }}
-      uses: EndBug/add-and-commit@v10
+      uses: EndBug/add-and-commit@v11
       with:
         add: ./action.yml
         message: "chore(release): Version ${{ steps.get_next_version.outputs.version }} [skip ci]"
@@ -71,7 +71,7 @@ jobs:
       uses: docker/setup-qemu-action@v4.2.0
     - name: Set up Docker Buildx
       if: ${{ steps.get_next_version.outputs.hasNextVersion == 'true' }}
-      uses: docker/setup-buildx-action@v4.2.0
+      uses: docker/setup-buildx-action@v4.3.0
     - name: Build and push docker image
       if: ${{ steps.get_next_version.outputs.hasNextVersion == 'true' }}
       uses: docker/build-push-action@v7.3.0
