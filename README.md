@@ -25,6 +25,7 @@ Go to the repository and run `get-next-version`. The tool will analyze the histo
 
 ```shell
 $ get-next-version
+1.2.3
 ```
 
 Optionally, you may hand over the `--repository` (or short `-r`) flag to specify the path to the repository you want to analyze, if it is not in the current working directory.
@@ -35,21 +36,49 @@ $ get-next-version --repository <PATH>
 
 If you need to prefix the version, you can use the `--prefix` (or short `-p`) flag. Note that the prefix must be a valid tag name on its own.
 
-By default, output will be printed to the console in a human-readable format. If you want to print the output in a machine-readable format, you can use the `--target` (or short `-t`) flag:
+By default, `get-next-version` prints nothing but the bare version string to stdout, which makes it easy to use in shell scripts. Use the `--target` (or short `-t`) flag to select a different output target:
 
 ```shell
-# Print output in JSON format
+# Print the bare version string to stdout (the default)
+$ get-next-version --target version
+
+# Print output in JSON format to stdout
 $ get-next-version --target json
 
 # Write output to the GITHUB_OUTPUT file in GitHub Action format (see https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-output-parameter)
 $ get-next-version --target github-action
 ```
 
+Errors are always written to stderr, so they never interfere with the output on stdout.
+
+## How the next version is determined
+
+`get-next-version` walks the history backwards, starting at `HEAD`, until it finds a commit that is tagged with a version. That version is the base version, and the next version is the base version raised by the most significant change among the commits that came after it.
+
+Two consequences are worth knowing about:
+
+**The base version is the most recent release reachable from `HEAD`, not the highest tag in the repository.** On a branch that was created before the latest release, the result can therefore be lower than the latest release, and it may even be a version that already exists:
+
+```
+main:  chore (1.0.0) → fix (1.0.1) → feat (1.1.0)
+           ↘
+            feature:  fix: Correct a typo
+
+$ get-next-version
+1.0.1     # already exists as a tag, and is lower than 1.1.0
+```
+
+This is intended, since it is the correct behavior for maintenance branches, but if you release from branches that fork before the latest release, you may want to verify the result before using it.
+
+**If no tagged commit is found at all, the base version is `0.0.0`.** This is what makes the first release work, but it also means that a repository whose tags have not been fetched silently yields a much lower version than expected.
+
+Since both of these depend on the full history being available, `get-next-version` needs a complete clone including all tags. If the history is truncated, it will tell you so.
+
 ## Using the GitHub Action
 
 For convenience, you may use the GitHub Action when running `get-next-version` inside a workflow on GitHub.
 
-**⚠️ When cloning the repository, make sure to set the `fetch-depth` option to `0`, otherwise `get-next-version` will not be able to analyze the history of the repository!**
+**⚠️ When cloning the repository, make sure to set the `fetch-depth` option to `0`, otherwise `get-next-version` will not be able to analyze the history of the repository!** This also fetches the tags, which are required to determine the base version. Without them, `get-next-version` either fails with an explicit error, or starts from `0.0.0` and returns a version that is much lower than expected.
 
 **⚠️ The action uses the parameter `target=github-action` by default, which will not print any human-readable output, but only write the output to the GITHUB_OUTPUT file.**
 
