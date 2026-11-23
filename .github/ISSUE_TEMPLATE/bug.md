@@ -1,21 +1,17 @@
 ---
 name: Bug
-about: Submit a bug to report erroneous behavior that needs to be fixed.
+about: Report erroneous behavior that needs to be fixed.
 ---
 
-### What happened incorrectly?
+### What is this bug about?
 
 …
 
-### What should have happened instead?
+### What needs to be done to fix this bug?
 
-…
-
-### What steps are needed to reproduce the bug?
-
-- …
-- …
-- …
+- [ ] …
+- [ ] …
+- [ ] …
 
 ### What else should we know?
 

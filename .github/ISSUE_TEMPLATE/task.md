@@ -1,6 +1,6 @@
 ---
 name: Task
-about: Submit a task to describe something that needs to get done.
+about: Describe something that needs to get done.
 ---
 
 ### What is this task about?
